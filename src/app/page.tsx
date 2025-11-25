@@ -1,109 +1,134 @@
 import Link from "next/link";
 import Image from "next/image";
 
-const properties = [
-  {
-    slug: "3bhk-suite",
-    name: "3 BHK in a Villa",
-    headline: "3 BHK with private jacuzzi & sunset views",
-    location: "Dehradun, India",
-    details: "3 bedrooms · 3 beds · 2.5 bathrooms · Up to 6 guests",
-    price: "₹18,000",
-    badge: "Popular for small groups",
-    amenities: ["Jacuzzi", "Barbeque", "Bonfire", "High-speed Wi‑Fi"],
-    image: "/images/livingroom.avif",
-  },
-  {
-    slug: "entire-villa",
-    name: "Entire Villa · 5 Bedrooms",
-    headline: "Entire hillside villa with theater room & lawn",
-    location: "Dehradun, India",
-    details: "5 bedrooms · 6 beds · 4.5 bathrooms · Up to 10 guests",
-    price: "₹32,000",
-    badge: "Best for families & groups",
-    amenities: [
-      "Jacuzzi",
-      "Barbeque",
-      "Bonfire",
-      "High-speed Wi‑Fi",
-      "Theater room",
-      "Small lawn",
-      "Balconies in all bedrooms",
-    ],
-    image: "/images/villa2.avif",
-  },
+const PHOTOS = [
+  "/villa-1.jpg",
+  "/villa-2.jpg",
+  "/villa-3.jpg",
+  "/villa-4.jpg",
 ];
 
 export default function Home() {
   return (
-    <div className="stack-lg">
-      <header className="hero">
-        <div className="hero-content">
-          <h1>RHA Villa · Hillside escapes in Dehradun</h1>
-          <p>
-            Choose between a cosy 3 BHK in a villa or book the entire 5-bedroom
-            hillside home — both with bonfire evenings, barbeques, and Mussoorie
-            sunset views.
-          </p>
-          <div className="hero-actions">
-            <Link href="/book" className="btn-primary">
-              Quick book
-            </Link>
-            <Link href="/dashboard" className="btn-secondary">
-              View my bookings
-            </Link>
+    <div className="listing-page">
+      <section className="listing-header">
+        <div>
+          <h1 className="listing-title">RHA Villa · Oceanfront luxury retreat</h1>
+          <div className="listing-meta">
+            <span>★ 4.9 · 8 reviews</span>
+            <span>·</span>
+            <span>Entire villa · 4 bedrooms · 8 guests</span>
+            <span>·</span>
+            <span>Goa, India</span>
           </div>
         </div>
-        <div className="hero-card">
-          <h2>Stay options at RHA Villa</h2>
-          <ul>
-            <li>3 BHK in a villa with private jacuzzi</li>
-            <li>Entire 5-bedroom villa with theater room & lawn</li>
-            <li>High-speed Wi‑Fi, barbeque, bonfire & sunset views</li>
-          </ul>
-        </div>
-      </header>
+      </section>
 
-      <section className="property-grid">
-        {properties.map((p) => (
-          <Link
-            key={p.slug}
-            href={`/properties/${p.slug}`}
-            className="property-card"
-          >
-            <div className="property-card-image">
+      <section className="listing-gallery">
+        <div className="listing-gallery-main">
+          <Image
+            src={PHOTOS[0]}
+            alt="RHA Villa main view"
+            fill
+            sizes="(min-width: 1024px) 900px, 100vw"
+            className="listing-gallery-image"
+            priority
+          />
+        </div>
+        <div className="listing-gallery-grid">
+          {PHOTOS.slice(1).map((src, idx) => (
+            <div key={src} className="listing-gallery-item">
               <Image
-                src={p.image}
-                alt={p.name}
+                src={src}
+                alt={`RHA Villa photo ${idx + 2}`}
                 fill
-                sizes="(min-width: 768px) 420px, 100vw"
+                sizes="(min-width: 1024px) 300px, 33vw"
+                className="listing-gallery-image"
               />
             </div>
-            <div className="property-card-body">
-              <div className="property-card-header">
-                <div>
-                  <h3>{p.name}</h3>
-                  <p className="property-location">{p.location}</p>
-                </div>
-                <span className="badge badge-success">★ 4.9</span>
-              </div>
-              <p className="property-headline">{p.headline}</p>
-              <p className="property-details">{p.details}</p>
-              <div className="property-amenities">
-                {p.amenities.slice(0, 4).map((a) => (
-                  <span key={a}>{a}</span>
-                ))}
-              </div>
-              <div className="property-card-footer">
-                <div>
-                  <div className="property-price">{p.price}</div>
-                  <div className="property-price-sub">per night</div>
-                </div>
-                <span className="badge">{p.badge}</span>
-              </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="listing-layout">
+        <div className="listing-column-main">
+          <div className="listing-host">
+            <div>
+              <h2>Entire villa hosted by Amber</h2>
+              <p>4 bedrooms · 5 beds · 4.5 bathrooms · Up to 8 guests</p>
             </div>
-          </Link>
-        ))}
+            <div className="listing-host-avatar">A</div>
+          </div>
+
+          <div className="listing-highlights">
+            <div>
+              <h3>Oceanfront infinity pool</h3>
+              <p>Swim with uninterrupted views over the Arabian Sea.</p>
+            </div>
+            <div>
+              <h3>Curated interiors</h3>
+              <p>Design-forward spaces with warm wood, stone and soft light.</p>
+            </div>
+            <div>
+              <h3>Chef & concierge</h3>
+              <p>In-villa breakfast, housekeeping and on-call concierge.</p>
+            </div>
+          </div>
+
+          <div className="listing-section">
+            <h3 className="listing-section-title">About this place</h3>
+            <p>
+              Wake up to panoramic ocean views, coffee on the terrace, and long
+              evenings around the pool. RHA Villa is designed for slow stays —
+              with generous common spaces, private ensuite bedrooms and thoughtful
+              details throughout.
+            </p>
+            <p>
+              Whether you book the entire villa or just a room, availability and
+              pricing are always live. Sign in with Google, pick your dates, and
+              confirm in a few clicks.
+            </p>
+          </div>
+
+          <div className="listing-section">
+            <h3 className="listing-section-title">What this place offers</h3>
+            <div className="listing-amenities">
+              <span>Infinity pool</span>
+              <span>High-speed Wi‑Fi</span>
+              <span>Air conditioning</span>
+              <span>Fully equipped kitchen</span>
+              <span>Daily housekeeping</span>
+              <span>On-site parking</span>
+              <span>Ocean-view terrace</span>
+              <span>Generator backup</span>
+            </div>
+          </div>
+        </div>
+
+        <aside className="listing-column-booking">
+          <div className="listing-booking-card">
+            <div className="listing-booking-header">
+              <div>
+                <div className="listing-price">₹45,000</div>
+                <div className="listing-price-sub">night · entire villa</div>
+              </div>
+              <div className="listing-rating">★ 4.9</div>
+            </div>
+
+            <div className="listing-booking-cta">
+              <Link href="/book" className="btn-primary listing-book-button">
+                Check availability
+              </Link>
+              <p className="listing-booking-note">
+                Live calendar · instant confirmation · secure Google sign‑in
+              </p>
+            </div>
+
+            <div className="listing-booking-footer">
+              <Link href="/dashboard">Already booked? View your stays →</Link>
+            </div>
+          </div>
+        </aside>
       </section>
     </div>
   );
