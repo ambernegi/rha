@@ -17,7 +17,6 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
   callbacks: {
     async session({ session, user }) {
       if (session.user) {
-        // Expose id and role on the client
         (session.user as any).id = user.id;
         (session.user as any).role = (user as any).role;
       }
@@ -38,47 +37,3 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
   secret: process.env.AUTH_SECRET,
 });
 
-import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import prisma from "@/lib/prisma"
-import type { Role } from "@prisma/client"
-
-export const { handlers, signIn, signOut, auth } = NextAuth({
-    adapter: PrismaAdapter(prisma),
-    providers: [
-        Google({
-            clientId: process.env.AUTH_GOOGLE_ID,
-            clientSecret: process.env.AUTH_GOOGLE_SECRET,
-        }),
-    ],
-    callbacks: {
-        async session({ session, user }) {
-            if (session.user) {
-                session.user.id = user.id;
-                // Fetch the user's role from the database
-                const dbUser = await prisma.user.findUnique({
-                    where: { id: user.id },
-                    select: { role: true },
-                });
-                session.user.role = dbUser?.role as Role;
-            }
-            return session;
-        },
-    },
-    pages: {
-        signIn: "/auth/signin",
-    },
-})
-
-declare module "next-auth" {
-    interface Session {
-        user: {
-            id: string;
-            role: Role;
-            email: string;
-            name?: string | null;
-            image?: string | null;
-        };
-    }
-}
