@@ -88,11 +88,7 @@ const PHOTOS_BY_PROPERTY: Record<PropertySlug, string[]> = {
   ],
 };
 
-export default function PropertyPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default function PropertyPage({ params }: { params: any }) {
   const slug = params.slug as PropertySlug;
   const config = PROPERTY_CONFIG[slug];
 
