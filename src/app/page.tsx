@@ -11,7 +11,7 @@ const properties = [
     price: "₹18,000",
     badge: "Popular for small groups",
     amenities: ["Jacuzzi", "Barbeque", "Bonfire", "High-speed Wi‑Fi"],
-    image: "/villa-1.jpg",
+    image: "/images/livingroom.avif",
   },
   {
     slug: "entire-villa",
@@ -30,7 +30,7 @@ const properties = [
       "Small lawn",
       "Balconies in all bedrooms",
     ],
-    image: "/villa-2.jpg",
+    image: "/images/villa2.avif",
   },
 ];
 

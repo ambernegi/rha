@@ -2,13 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-const PHOTOS = [
-  "/villa-1.jpg",
-  "/villa-2.jpg",
-  "/villa-3.jpg",
-  "/villa-4.jpg",
-];
-
 const PROPERTY_CONFIG = {
   "3bhk-suite": {
     title: "3 BHK in a Villa · Dehradun",
@@ -80,16 +73,34 @@ const PROPERTY_CONFIG = {
 
 type PropertySlug = keyof typeof PROPERTY_CONFIG;
 
+const PHOTOS_BY_PROPERTY: Record<PropertySlug, string[]> = {
+  "3bhk-suite": [
+    "/images/Gfloorbedroom.jpg",
+    "/images/bedroom2.jpg",
+    "/images/kidsbedroom.jpg",
+    "/images/bathroom2.jpg",
+  ],
+  "entire-villa": [
+    "/images/masterbedroom2.jpg",
+    "/images/bedroom4.jpeg",
+    "/images/Theaterroom.avif",
+    "/images/lawn2.avif",
+  ],
+};
+
 export default function PropertyPage({
   params,
 }: {
   params: { slug: string };
 }) {
-  const config = PROPERTY_CONFIG[params.slug as PropertySlug];
+  const slug = params.slug as PropertySlug;
+  const config = PROPERTY_CONFIG[slug];
 
   if (!config) {
     return notFound();
   }
+
+  const photos = PHOTOS_BY_PROPERTY[slug] ?? PHOTOS_BY_PROPERTY["3bhk-suite"];
 
   return (
     <div className="listing-page">
@@ -109,7 +120,7 @@ export default function PropertyPage({
       <section className="listing-gallery">
         <div className="listing-gallery-main">
           <Image
-            src={PHOTOS[0]}
+            src={photos[0]}
             alt={config.title}
             fill
             sizes="(min-width: 1024px) 900px, 100vw"
@@ -118,7 +129,7 @@ export default function PropertyPage({
           />
         </div>
         <div className="listing-gallery-grid">
-          {PHOTOS.slice(1).map((src, idx) => (
+          {photos.slice(1).map((src, idx) => (
             <div key={src} className="listing-gallery-item">
               <Image
                 src={src}
@@ -158,6 +169,24 @@ export default function PropertyPage({
               slow coffee on the balcony. Evenings are for bonfires, barbeques and
               long conversations under clear skies.
             </p>
+            <p>
+              Modern living room equipped with a 3-seater sofa, 4-seater dining
+              table, a center table and a 65 inch smart TV – perfect for both
+              relaxed conversations and movie nights.
+            </p>
+            <p>
+              A fully well-equipped kitchen with premium amenities like a double
+              door fridge, microwave, smart chimney, aquaguard, hob and cooking
+              essentials like cutleries, pans, cookers, mixer & more. The caretaker
+              can also act as a chef for your culinary needs (chargeable), so you
+              can focus on your stay.
+            </p>
+            <p>
+              Master bedroom for the Kings and the Queens, taking you back to the
+              Victorian era – with an ensuite bathroom, walk-in wardrobe, hot and
+              cold AC and a smart TV.
+            </p>
+            <p>All rooms have an AC so you stay comfortable year‑round.</p>
             <p>
               Sign in with Google, pick your dates, and confirm your stay in a
               few clicks. Our calendar is live and synced with all bookings.
