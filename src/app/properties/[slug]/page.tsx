@@ -85,44 +85,35 @@ export default function PropertyPage({ params }: any) {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-                gap: "0.75rem",
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                gap: "0.9rem",
               }}
             >
-              {property.gallery.map((src) => {
-                const fileName = src.split("/").pop() || "";
-                const label = fileName
-                  .replace(/\.[^.]+$/, "")
-                  .replace(/[-_]/g, " ")
-                  .replace(/\s+/g, " ")
-                  .trim();
-
-                return (
-                  <figure key={src} style={{ margin: 0 }}>
-                    <Image
-                      src={src}
-                      alt={label || property.name}
-                      width={400}
-                      height={260}
-                      style={{
-                        borderRadius: "0.75rem",
-                        width: "100%",
-                        height: "auto",
-                        objectFit: "cover",
-                      }}
-                    />
-                    <figcaption
-                      style={{
-                        marginTop: "0.35rem",
-                        fontSize: 12,
-                        color: "var(--text-muted)",
-                      }}
-                    >
-                      {label || property.name}
-                    </figcaption>
-                  </figure>
-                );
-              })}
+              {property.gallery.map((img) => (
+                <figure key={img.src} style={{ margin: 0 }}>
+                  <Image
+                    src={img.src}
+                    alt={img.label || property.name}
+                    width={480}
+                    height={320}
+                    style={{
+                      borderRadius: "0.75rem",
+                      width: "100%",
+                      height: "auto",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <figcaption
+                    style={{
+                      marginTop: "0.35rem",
+                      fontSize: 12,
+                      color: "var(--text-muted)",
+                    }}
+                  >
+                    {img.label || property.name}
+                  </figcaption>
+                </figure>
+              ))}
             </div>
           </div>
         </div>
