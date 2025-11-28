@@ -1,3 +1,8 @@
+export type GalleryImage = {
+  src: string;
+  label: string;
+};
+
 export type PropertyVariant = {
   slug: string;
   name: string;
@@ -6,7 +11,7 @@ export type PropertyVariant = {
   description: string;
   mainImage: string;
   mainImageAlt: string;
-  gallery: string[];
+  gallery: GalleryImage[];
   highlights?: string[];
   rateOptions?: { label: string; price: string }[];
 };
@@ -14,11 +19,13 @@ export type PropertyVariant = {
 export const SHARED_AMENITIES = [
   "AC",
   "Geyser",
+  "Mountain view",
   "Mussoorie view",
   "Jacuzzi",
   "BBQ bonfire (extra cost)",
   "Theater room",
   "Fully stocked kitchen",
+  "Parking available",
 ];
 
 export const PROPERTY_VARIANTS: PropertyVariant[] = [
@@ -32,37 +39,37 @@ export const PROPERTY_VARIANTS: PropertyVariant[] = [
     mainImage: "/images/villa.avif",
     mainImageAlt: "Exterior view of the villa with lawn and mountain backdrop",
     gallery: [
-      "/images/villa.avif",
-      "/images/villa2.avif",
-      "/images/lawn.avif",
-      "/images/lawn2.avif",
-      "/images/livingroom.avif",
-      "/images/livingarea.avif",
-      "/images/commonarea.avif",
-      "/images/commonarea2.avif",
-      "/images/masterbedroom.avif",
-      "/images/masterbedroom2.jpg",
-      "/images/bedroom2.jpg",
-      "/images/bedroom3.avif",
-      "/images/bedroom4.jpeg",
-      "/images/Gfloorbedroom.jpg",
-      "/images/kidsbedroom.jpg",
-      "/images/bathroom.avif",
-      "/images/bathroom2.jpg",
-      "/images/bathroom4.jpg",
-      "/images/washroomgfloor.avif",
-      "/images/kitchen.avif",
-      "/images/kitchen2.avif",
-      "/images/kitchen3.avif",
-      "/images/kitchen4.avif",
-      "/images/kitchen5.avif",
-      "/images/kitchen6.avif",
-      "/images/terrace.avif",
-      "/images/terrace2 .avif",
-      "/images/terrace3.avif",
-      "/images/Theaterroom.avif",
-      "/images/theaterroom2.avif",
-      "/images/bonfire.avif",
+      { src: "/images/villa.avif", label: "Villa exterior" },
+      { src: "/images/villa2.avif", label: "Villa facade" },
+      { src: "/images/lawn.avif", label: "Lawn and garden" },
+      { src: "/images/lawn2.avif", label: "Lawn with mountain views" },
+      { src: "/images/livingroom.avif", label: "Main living room" },
+      { src: "/images/livingarea.avif", label: "Cozy living area" },
+      { src: "/images/commonarea.avif", label: "Common lounge" },
+      { src: "/images/commonarea2.avif", label: "Common seating area" },
+      { src: "/images/masterbedroom.avif", label: "Master bedroom" },
+      { src: "/images/masterbedroom2.jpg", label: "Master bedroom – alternate view" },
+      { src: "/images/bedroom2.jpg", label: "Bedroom 2" },
+      { src: "/images/bedroom3.avif", label: "Bedroom 3" },
+      { src: "/images/bedroom4.jpeg", label: "Bedroom 4" },
+      { src: "/images/Gfloorbedroom.jpg", label: "Ground floor bedroom" },
+      { src: "/images/kidsbedroom.jpg", label: "Kids bedroom" },
+      { src: "/images/bathroom.avif", label: "Bathroom" },
+      { src: "/images/bathroom2.jpg", label: "Bathroom with shower" },
+      { src: "/images/bathroom4.jpg", label: "Bathroom vanity" },
+      { src: "/images/washroomgfloor.avif", label: "Ground floor washroom" },
+      { src: "/images/kitchen.avif", label: "Kitchen" },
+      { src: "/images/kitchen2.avif", label: "Kitchen counter" },
+      { src: "/images/kitchen3.avif", label: "Kitchen appliances" },
+      { src: "/images/kitchen4.avif", label: "Kitchen and dining" },
+      { src: "/images/kitchen5.avif", label: "Pantry and storage" },
+      { src: "/images/kitchen6.avif", label: "Fully stocked kitchen" },
+      { src: "/images/terrace.avif", label: "Terrace seating" },
+      { src: "/images/terrace2 .avif", label: "Terrace with valley views" },
+      { src: "/images/terrace3.avif", label: "Terrace at sunset" },
+      { src: "/images/Theaterroom.avif", label: "Theater room" },
+      { src: "/images/theaterroom2.avif", label: "Theater seating" },
+      { src: "/images/bonfire.avif", label: "Bonfire setup" },
     ],
     highlights: [
       "Perfect for large families and groups",
@@ -81,9 +88,9 @@ export const PROPERTY_VARIANTS: PropertyVariant[] = [
     mainImage: "/images/masterbedroom.avif",
     mainImageAlt: "Master bedroom with warm lighting and mountain views",
     gallery: [
-      "/images/masterbedroom.avif",
-      "/images/bedroom2.jpg",
-      "/images/Gfloorbedroom.jpg",
+      { src: "/images/masterbedroom.avif", label: "Master bedroom" },
+      { src: "/images/bedroom2.jpg", label: "Bedroom 2" },
+      { src: "/images/Gfloorbedroom.jpg", label: "Ground floor bedroom" },
     ],
     highlights: [
       "Three comfortable bedrooms including one on the ground floor",
@@ -101,9 +108,9 @@ export const PROPERTY_VARIANTS: PropertyVariant[] = [
     mainImage: "/images/bedroom3.avif",
     mainImageAlt: "Cozy bedroom with balcony and view",
     gallery: [
-      "/images/commonarea.avif",
-      "/images/terrace2 .avif",
-      "/images/Theaterroom.avif",
+      { src: "/images/commonarea.avif", label: "Common living area" },
+      { src: "/images/terrace2 .avif", label: "Shared terrace" },
+      { src: "/images/Theaterroom.avif", label: "Shared theater room" },
     ],
     highlights: [
       "Private rooms with access to shared living and terrace",
