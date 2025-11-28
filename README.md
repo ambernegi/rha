@@ -255,7 +255,7 @@ All API routes live under `src/app/api/**` and use App Router route handlers.
 
 ---
 
-## Environment Variables
+## Environment Variables (local & Vercel)
 
 Create `.env.local` in the project root with:
 
@@ -267,12 +267,16 @@ GOOGLE_CLIENT_SECRET="your-google-client-secret"
 
 AUTH_SECRET="a-long-random-string"
 ADMIN_EMAIL="owner@example.com"
+
+# Optional, but recommended in production (Vercel):
+# AUTH_URL="https://your-project-name.vercel.app"
 ```
 
-- **`DATABASE_URL`** – PostgreSQL connection string.
-- **`GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`** – from your Google Cloud Console OAuth credentials.
-- **`AUTH_SECRET`** – random string used by Auth.js (use `openssl rand -base64 32` or similar).
-- **`ADMIN_EMAIL`** – the villa owner’s email; first sign-in with this email upgrades the user to `ADMIN`.
+- **`DATABASE_URL`**: PostgreSQL connection string.
+- **`GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`**: from your Google Cloud Console OAuth credentials.
+- **`AUTH_SECRET`**: random string used by Auth.js (use `openssl rand -base64 32` or `npx auth secret`).
+- **`ADMIN_EMAIL`**: the villa owner’s email; first sign-in with this email upgrades the user to `ADMIN`.
+- **`AUTH_URL`**: base URL of your deployed app (e.g. `https://rha-booking.vercel.app`); used by Auth.js behind the scenes.
 
 ---
 
@@ -304,6 +308,38 @@ npm run dev
 ```
 
 Then visit `http://localhost:3000`.
+
+---
+
+## Deploying to Vercel
+
+This project is designed to run on Vercel with minimal config:
+
+1. **Create a Postgres database**  
+   Use Vercel Postgres, Neon, Supabase, or any hosted PostgreSQL and copy the connection string as `DATABASE_URL`.
+
+2. **Configure Google OAuth for production**  
+   In Google Cloud Console → APIs & Services → Credentials → your OAuth client:
+   - **Authorized JavaScript origins**:  
+     - `https://your-project-name.vercel.app`
+   - **Authorized redirect URIs**:  
+     - `https://your-project-name.vercel.app/api/auth/callback/google`
+
+3. **Create the Vercel project**  
+   - Import the repo into Vercel.
+   - Ensure the project root is the `rha` folder.
+
+4. **Set environment variables in Vercel** (Project → Settings → Environment Variables):
+   - `DATABASE_URL` – from step 1.
+   - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – from Google Cloud.
+   - `AUTH_SECRET` – click “Generate” in Vercel or paste a strong random string.
+   - `ADMIN_EMAIL` – owner email (e.g. `owner@example.com`).
+   - Optional: `AUTH_URL` – `https://your-project-name.vercel.app`.
+
+5. **Deploy**  
+   Vercel will run `npm install`, then `npm run build`, which in turn triggers the Prisma `postinstall` (`prisma generate && prisma db push`) to sync the schema with your DB.
+
+If a deployment fails, check the Vercel build logs after the Prisma section for the actual Next.js/TypeScript error and adjust accordingly.
 
 ---
 
