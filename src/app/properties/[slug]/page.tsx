@@ -39,6 +39,19 @@ export default function PropertyPage({ params }: any) {
         </p>
 
         <div className="form-grid">
+          {property.highlights && property.highlights.length > 0 && (
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title">Highlights</div>
+              </div>
+              <ul style={{ paddingLeft: "1.2rem", margin: 0, fontSize: 14 }}>
+                {property.highlights.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div className="card">
             <div className="card-header">
               <div className="card-title">Amenities</div>
@@ -49,6 +62,21 @@ export default function PropertyPage({ params }: any) {
               ))}
             </ul>
           </div>
+
+          {property.rateOptions && property.rateOptions.length > 0 && (
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title">Rates</div>
+              </div>
+              <ul style={{ paddingLeft: "1.2rem", margin: 0, fontSize: 14 }}>
+                {property.rateOptions.map((rate) => (
+                  <li key={rate.label}>
+                    <strong>{rate.label}:</strong> {rate.price}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <div className="card">
             <div className="card-header">
@@ -61,21 +89,40 @@ export default function PropertyPage({ params }: any) {
                 gap: "0.75rem",
               }}
             >
-              {property.gallery.map((src) => (
-                <Image
-                  key={src}
-                  src={src}
-                  alt={property.name}
-                  width={400}
-                  height={260}
-                  style={{
-                    borderRadius: "0.75rem",
-                    width: "100%",
-                    height: "auto",
-                    objectFit: "cover",
-                  }}
-                />
-              ))}
+              {property.gallery.map((src) => {
+                const fileName = src.split("/").pop() || "";
+                const label = fileName
+                  .replace(/\.[^.]+$/, "")
+                  .replace(/[-_]/g, " ")
+                  .replace(/\s+/g, " ")
+                  .trim();
+
+                return (
+                  <figure key={src} style={{ margin: 0 }}>
+                    <Image
+                      src={src}
+                      alt={label || property.name}
+                      width={400}
+                      height={260}
+                      style={{
+                        borderRadius: "0.75rem",
+                        width: "100%",
+                        height: "auto",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <figcaption
+                      style={{
+                        marginTop: "0.35rem",
+                        fontSize: 12,
+                        color: "var(--text-muted)",
+                      }}
+                    >
+                      {label || property.name}
+                    </figcaption>
+                  </figure>
+                );
+              })}
             </div>
           </div>
         </div>
