@@ -24,9 +24,9 @@ export default function Home() {
         <div className="hero-card">
           <h2>Why stay at RHA Villa?</h2>
           <ul>
-            <li>Ocean-view master suite and curated interiors</li>
-            <li>Flexible stays: entire villa or private rooms</li>
-            <li>Instant Google login and secure payments (mock)</li>
+            <li>Prime Dehradun location with easy access to city and hills</li>
+            <li>Rajpur Road – 1.5 km, Pacific Mall – 5 km, Mussoorie Road – 6 km</li>
+            <li>Perfect base for cafés, shopping and Mussoorie day trips</li>
           </ul>
         </div>
       </div>

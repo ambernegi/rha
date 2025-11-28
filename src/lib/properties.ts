@@ -14,6 +14,7 @@ export type PropertyVariant = {
   gallery: GalleryImage[];
   highlights?: string[];
   rateOptions?: { label: string; price: string }[];
+  extraAmenities?: string[];
 };
 
 export const SHARED_AMENITIES = [
@@ -77,6 +78,7 @@ export const PROPERTY_VARIANTS: PropertyVariant[] = [
       "Dedicated theater room and multiple living areas",
       "Ideal for celebrations, offsites, and long weekends",
     ],
+    extraAmenities: ["Kids bunk bedroom"],
   },
   {
     slug: "3bhk-villa",
@@ -102,7 +104,7 @@ export const PROPERTY_VARIANTS: PropertyVariant[] = [
     slug: "single-rooms",
     name: "Single Rooms in Villa",
     subtitle: "Cozy private rooms",
-    priceLabel: "Contact us for pricing",
+    priceLabel: "From ₹1,200 / night",
     description:
       "Comfortable individual rooms inside the villa, with access to the common living area and terrace.",
     mainImage: "/images/bedroom3.avif",
@@ -120,7 +122,6 @@ export const PROPERTY_VARIANTS: PropertyVariant[] = [
     rateOptions: [
       { label: "Room with shared bathroom", price: "₹1,200 / night" },
       { label: "Room with attached bathroom", price: "₹1,500 / night" },
-      { label: "Twin sharing (per person)", price: "₹1,500 / night" },
     ],
   },
 ];

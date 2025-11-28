@@ -13,6 +13,10 @@ export default function PropertyPage({ params }: any) {
     return notFound();
   }
 
+  const amenities = property.extraAmenities
+    ? [...SHARED_AMENITIES, ...property.extraAmenities]
+    : SHARED_AMENITIES;
+
   return (
     <div className="stack-lg">
       <div className="card">
@@ -57,7 +61,7 @@ export default function PropertyPage({ params }: any) {
               <div className="card-title">Amenities</div>
             </div>
             <ul style={{ paddingLeft: "1.2rem", margin: 0, fontSize: 14 }}>
-              {SHARED_AMENITIES.map((item) => (
+              {amenities.map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
@@ -85,44 +89,35 @@ export default function PropertyPage({ params }: any) {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-                gap: "0.75rem",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                gap: "0.9rem",
               }}
             >
-              {property.gallery.map((src) => {
-                const fileName = src.split("/").pop() || "";
-                const label = fileName
-                  .replace(/\.[^.]+$/, "")
-                  .replace(/[-_]/g, " ")
-                  .replace(/\s+/g, " ")
-                  .trim();
-
-                return (
-                  <figure key={src} style={{ margin: 0 }}>
-                    <Image
-                      src={src}
-                      alt={label || property.name}
-                      width={400}
-                      height={260}
-                      style={{
-                        borderRadius: "0.75rem",
-                        width: "100%",
-                        height: "auto",
-                        objectFit: "cover",
-                      }}
-                    />
-                    <figcaption
-                      style={{
-                        marginTop: "0.35rem",
-                        fontSize: 12,
-                        color: "var(--text-muted)",
-                      }}
-                    >
-                      {label || property.name}
-                    </figcaption>
-                  </figure>
-                );
-              })}
+              {property.gallery.map((image) => (
+                <figure key={image.src} style={{ margin: 0 }}>
+                  <Image
+                    src={image.src}
+                    alt={image.label || property.name}
+                    width={420}
+                    height={280}
+                    style={{
+                      borderRadius: "0.75rem",
+                      width: "100%",
+                      height: "auto",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <figcaption
+                    style={{
+                      marginTop: "0.35rem",
+                      fontSize: 12,
+                      color: "var(--text-muted)",
+                    }}
+                  >
+                    {image.label}
+                  </figcaption>
+                </figure>
+              ))}
             </div>
           </div>
         </div>
