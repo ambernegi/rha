@@ -102,7 +102,7 @@ export const PROPERTY_VARIANTS: PropertyVariant[] = [
     slug: "single-rooms",
     name: "Single Rooms in Villa",
     subtitle: "Cozy private rooms",
-    priceLabel: "Contact us for pricing",
+    priceLabel: "₹1,500 / night",
     description:
       "Comfortable individual rooms inside the villa, with access to the common living area and terrace.",
     mainImage: "/images/bedroom3.avif",
