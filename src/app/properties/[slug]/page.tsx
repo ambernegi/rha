@@ -16,8 +16,13 @@ export default function PropertyPage({ params }: any) {
 
   return (
     <div className="stack-lg">
-      {/* Image gallery first, before any text */}
-      <PropertyGallery images={property.gallery} title={property.name} />
+      {/* Full gallery before any descriptive text */}
+      <PropertyGallery
+        title={property.name}
+        coverSrc={property.mainImage}
+        coverAlt={property.mainImageAlt}
+        images={property.gallery}
+      />
 
       <div className="card">
         <div className="card-header">
@@ -79,46 +84,6 @@ export default function PropertyPage({ params }: any) {
                 </ul>
               </div>
             )}
-
-            <div className="card">
-              <div className="card-header">
-                <div className="card-title">More photos</div>
-              </div>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    "repeat(auto-fit, minmax(200px, 1fr))",
-                  gap: "0.9rem",
-                }}
-              >
-                {property.gallery.map((img) => (
-                  <figure key={img.src} style={{ margin: 0 }}>
-                    <Image
-                      src={img.src}
-                      alt={img.label || property.name}
-                      width={480}
-                      height={320}
-                      style={{
-                        borderRadius: "0.75rem",
-                        width: "100%",
-                        height: "auto",
-                        objectFit: "cover",
-                      }}
-                    />
-                    <figcaption
-                      style={{
-                        marginTop: "0.35rem",
-                        fontSize: 12,
-                        color: "var(--text-muted)",
-                      }}
-                    >
-                      {img.label || property.name}
-                    </figcaption>
-                  </figure>
-                ))}
-              </div>
-            </div>
           </div>
 
           <div className="card">
