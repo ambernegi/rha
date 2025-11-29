@@ -118,7 +118,7 @@ export const PROPERTY_VARIANTS: PropertyVariant[] = [
     subtitle: "Cozy private rooms",
     priceLabel: "₹1,500 / night",
     description:
-      "Comfortable individual rooms inside the villa, with access to the common living area and terrace.",
+      "Comfortable individual rooms inside the villa, with access to the common living area and terrace — perfect for staycations and workcations, with special offers for stays of 5+ nights.",
     mainImage: "/images/bedroom3.avif",
     mainImageAlt: "Cozy bedroom with balcony and view",
     gallery: [
@@ -129,7 +129,7 @@ export const PROPERTY_VARIANTS: PropertyVariant[] = [
     highlights: [
       "Private rooms with access to shared living area and terrace",
       "Budget-friendly way to experience the villa",
-      "Ideal for solo travellers, remote workers, or couples",
+      "Ideal for solo travellers, remote workers, or couples planning a longer stay",
     ],
     rateOptions: [
       { label: "Room with shared bathroom", price: "₹1,200 / night" },
