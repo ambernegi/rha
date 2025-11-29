@@ -1,10 +1,10 @@
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   PROPERTY_VARIANTS,
   SHARED_AMENITIES,
   getPropertyBySlug,
 } from "@/lib/properties";
+import { PropertyHeroGallery } from "./PropertyHeroGallery";
 
 export default function PropertyPage({ params }: any) {
   const property = getPropertyBySlug(params?.slug);
@@ -23,17 +23,11 @@ export default function PropertyPage({ params }: any) {
           </div>
           <span className="badge badge-success">{property.priceLabel}</span>
         </div>
+      </div>
 
-        <div style={{ marginBottom: "1.25rem" }}>
-          <Image
-            src={property.mainImage}
-            alt={property.mainImageAlt}
-            width={1200}
-            height={700}
-            style={{ borderRadius: "1rem", width: "100%", height: "auto" }}
-          />
-        </div>
+      <PropertyHeroGallery property={property} />
 
+      <div className="card">
         <p className="muted" style={{ marginBottom: "1.25rem" }}>
           {property.description}
         </p>
@@ -77,45 +71,6 @@ export default function PropertyPage({ params }: any) {
               </ul>
             </div>
           )}
-
-          <div className="card">
-            <div className="card-header">
-              <div className="card-title">Gallery</div>
-            </div>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                gap: "0.9rem",
-              }}
-            >
-              {property.gallery.map((img) => (
-                <figure key={img.src} style={{ margin: 0 }}>
-                  <Image
-                    src={img.src}
-                    alt={img.label || property.name}
-                    width={480}
-                    height={320}
-                    style={{
-                      borderRadius: "0.75rem",
-                      width: "100%",
-                      height: "auto",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <figcaption
-                    style={{
-                      marginTop: "0.35rem",
-                      fontSize: 12,
-                      color: "var(--text-muted)",
-                    }}
-                  >
-                    {img.label || property.name}
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
 
