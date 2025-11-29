@@ -14,6 +14,7 @@ export type PropertyVariant = {
   gallery: GalleryImage[];
   highlights?: string[];
   rateOptions?: { label: string; price: string }[];
+  rules?: string[];
 };
 
 export const SHARED_AMENITIES = [
@@ -72,10 +73,17 @@ export const PROPERTY_VARIANTS: PropertyVariant[] = [
       { src: "/images/bonfire.avif", label: "Bonfire setup" },
     ],
     highlights: [
-      "Perfect for large families and groups",
+      "Perfect for large families, multiple couples, or group getaways",
       "Private access to entire villa, lawn, and terrace",
-      "Dedicated theater room and multiple living areas",
+      "Dedicated theater room, kids room, and multiple living areas",
       "Ideal for celebrations, offsites, and long weekends",
+    ],
+    rules: [
+      "Family-friendly property – ideal for families and small groups",
+      "No loud music outdoors after 10:00 pm",
+      "Small get-togethers allowed; no large parties or events without prior approval",
+      "No smoking inside the villa; smoking allowed only on balconies and terrace",
+      "Please respect neighbors and keep common areas tidy",
     ],
   },
   {
@@ -94,8 +102,14 @@ export const PROPERTY_VARIANTS: PropertyVariant[] = [
     ],
     highlights: [
       "Three comfortable bedrooms including one on the ground floor",
-      "Private space while still part of the main villa",
-      "Great for smaller families or groups of friends",
+      "Private wing feel while still part of the main villa",
+      "Perfect for smaller families or close friends",
+    ],
+    rules: [
+      "Best suited for families or a quiet group of friends",
+      "No loud music outdoors after 10:00 pm",
+      "No house parties; only registered guests are allowed to stay overnight",
+      "No smoking inside rooms; balconies and terrace only",
     ],
   },
   {
@@ -113,14 +127,20 @@ export const PROPERTY_VARIANTS: PropertyVariant[] = [
       { src: "/images/Theaterroom.avif", label: "Shared theater room" },
     ],
     highlights: [
-      "Private rooms with access to shared living and terrace",
+      "Private rooms with access to shared living area and terrace",
       "Budget-friendly way to experience the villa",
-      "Ideal for solo travellers or couples",
+      "Ideal for solo travellers, remote workers, or couples",
     ],
     rateOptions: [
       { label: "Room with shared bathroom", price: "₹1,200 / night" },
       { label: "Room with attached bathroom", price: "₹1,500 / night" },
       { label: "Twin sharing (per person)", price: "₹1,500 / night" },
+    ],
+    rules: [
+      "Family-friendly floor with shared common spaces",
+      "Quiet hours from 10:00 pm to 7:00 am in shared areas",
+      "No visitors after 10:00 pm without prior intimation",
+      "No smoking inside rooms; terrace and open areas only",
     ],
   },
 ];

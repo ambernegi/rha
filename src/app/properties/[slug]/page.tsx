@@ -1,9 +1,5 @@
 import { notFound } from "next/navigation";
-import {
-  PROPERTY_VARIANTS,
-  SHARED_AMENITIES,
-  getPropertyBySlug,
-} from "@/lib/properties";
+import { SHARED_AMENITIES, getPropertyBySlug } from "@/lib/properties";
 import { PropertyHeroGallery } from "./PropertyHeroGallery";
 
 export default function PropertyPage({ params }: any) {
@@ -67,6 +63,19 @@ export default function PropertyPage({ params }: any) {
                   <li key={rate.label}>
                     <strong>{rate.label}:</strong> {rate.price}
                   </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {property.rules && property.rules.length > 0 && (
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title">House rules</div>
+              </div>
+              <ul style={{ paddingLeft: "1.2rem", margin: 0, fontSize: 14 }}>
+                {property.rules.map((rule) => (
+                  <li key={rule}>{rule}</li>
                 ))}
               </ul>
             </div>

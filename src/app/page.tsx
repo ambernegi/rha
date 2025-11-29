@@ -24,17 +24,17 @@ export default function Home() {
         <div className="hero-card">
           <h2>Why stay at RHA Villa?</h2>
           <ul>
-            <li>Ocean-view master suite and thoughtfully curated interiors</li>
-            <li>Flexible stays: entire villa, 3BHK, or private rooms</li>
-            <li>Instant Google login and streamlined booking experience</li>
+            <li>Flexible configurations: entire villa, 3BHK, or private rooms</li>
+            <li>Thoughtfully designed spaces for families, friends, and remote work</li>
           </ul>
           <div
             className="card-subtitle"
             style={{ marginTop: "0.9rem", fontSize: "0.85rem" }}
           >
-            <strong>Close to everything, away from the noise</strong>
+            <strong>Perfect Rajpur–Mussoorie location</strong>
             <br />
-            Pacific Mall – 5 km · Mussoorie Road – 6 km · Rajpur Road – 1.5 km
+            1.5 km from Rajpur Road cafés & restaurants · 5 km from Pacific Mall ·
+            6 km from Mussoorie Road, the gateway to the hills.
           </div>
         </div>
       </div>
