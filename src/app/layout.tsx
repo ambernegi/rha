@@ -27,14 +27,10 @@ export default function RootLayout({
                 <Link href="/admin">Owner</Link>
               </nav>
               <div className="nav-auth">
-                <a href="/api/auth/signin" className="nav-auth-link">
+                <a href="/login" className="nav-auth-link">
                   Sign in
                 </a>
-                <form
-                  method="post"
-                  action="/api/auth/signout"
-                  style={{ display: "inline" }}
-                >
+                <form method="post" action="/logout" style={{ display: "inline" }}>
                   <button type="submit" className="nav-auth-link">
                     Sign out
                   </button>
