@@ -113,10 +113,24 @@ button {
 .nav-dropdown summary {
   list-style: none;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .nav-dropdown summary::-webkit-details-marker {
   display: none;
+}
+
+.nav-dropdown summary::after {
+  content: "⌄";
+  font-size: 0.9em;
+  color: var(--text-muted);
+}
+
+.nav-dropdown[open] summary::after {
+  content: "⌃";
+  color: var(--text);
 }
 
 .nav-dropdown-menu {
@@ -150,6 +164,20 @@ button {
   border: none;
   background: transparent;
   cursor: pointer;
+}
+
+/* Booking layout (desktop) */
+.booking-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 980px) {
+  .booking-grid {
+    grid-template-columns: minmax(340px, 0.95fr) minmax(420px, 1.05fr);
+    align-items: start;
+  }
 }
 
 .app-main {

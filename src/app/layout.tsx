@@ -41,7 +41,7 @@ export default async function RootLayout({
               <Link href="/" className="logo">
                 RHA Villa
               </Link>
-              <nav className="nav-links">{isHost && <Link href="/admin">Owner</Link>}</nav>
+              <nav className="nav-links" />
               <div className="nav-auth">
                 <details className="nav-dropdown">
                   <summary className="nav-auth-link">
@@ -50,6 +50,11 @@ export default async function RootLayout({
                   <div className="nav-dropdown-menu">
                     {user ? (
                       <>
+                        {isHost && (
+                          <Link href="/admin" className="nav-dropdown-item">
+                            Owner dashboard
+                          </Link>
+                        )}
                         <Link href="/dashboard" className="nav-dropdown-item">
                           My bookings
                         </Link>

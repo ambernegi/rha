@@ -10,14 +10,6 @@ type Configuration = {
   price_per_night: number;
 };
 
-type BookingLock = {
-  id: string;
-  resource_id: string;
-  start_date: string;
-  end_date: string;
-  booking_id: string;
-};
-
 type ApiError = { error: string };
 
 export default function BookPage() {
@@ -25,9 +17,7 @@ export default function BookPage() {
   const [selectedSlug, setSelectedSlug] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
-  const [locks, setLocks] = useState<BookingLock[]>([]);
   const [loadingConfigs, setLoadingConfigs] = useState(false);
-  const [loadingAvailability, setLoadingAvailability] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -68,28 +58,6 @@ export default function BookPage() {
     void loadConfigurations();
   }, []);
 
-  useEffect(() => {
-    const loadAvailability = async () => {
-      if (!selectedSlug) return;
-      setLoadingAvailability(true);
-      try {
-        const query = new URLSearchParams({ configurationSlug: selectedSlug });
-        const res = await fetch(`/api/supa/availability?${query.toString()}`);
-        const data = (await res.json()) as { locks?: BookingLock[] } | ApiError;
-        if (!res.ok || "error" in data) {
-          throw new Error((data as ApiError).error || "Failed to load availability");
-        }
-        setLocks((data as { locks?: BookingLock[] }).locks ?? []);
-      } catch (err: any) {
-        setError(err.message || "Failed to load availability");
-      } finally {
-        setLoadingAvailability(false);
-      }
-    };
-
-    void loadAvailability();
-  }, [selectedSlug]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage(null);
@@ -118,13 +86,6 @@ export default function BookPage() {
       }
 
       setMessage("Booking request submitted! Awaiting host confirmation.");
-      // Refresh availability (locks won't change until confirmed, but keeps UI consistent)
-      const query = new URLSearchParams({ configurationSlug: selectedSlug });
-      const availRes = await fetch(`/api/supa/availability?${query.toString()}`);
-      if (availRes.ok) {
-        const availData = (await availRes.json()) as { locks?: BookingLock[] };
-        setLocks(availData.locks ?? []);
-      }
     } catch (err: any) {
       setError(err.message || "Failed to create booking");
     } finally {
@@ -133,34 +94,52 @@ export default function BookPage() {
   };
 
   const selectedConfig = configs.find((c) => c.slug === selectedSlug);
+  const nights =
+    startDate && endDate
+      ? Math.max(
+          0,
+          Math.round(
+            (new Date(`${endDate}T00:00:00.000Z`).getTime() -
+              new Date(`${startDate}T00:00:00.000Z`).getTime()) /
+              (1000 * 60 * 60 * 24),
+          ),
+        )
+      : 0;
+  const total =
+    selectedConfig && nights > 0 ? Number(selectedConfig.price_per_night) * nights : 0;
 
   return (
     <div className="stack-lg">
-      <div className="card">
-        <div className="card-header">
-          <div>
-            <div className="card-title">Book your stay</div>
-            <div className="card-subtitle">
-              Choose a resource and dates to request a booking.
+      <div className="booking-grid">
+        <div className="card">
+          <div className="card-header">
+            <div>
+              <div className="card-title">Request a booking</div>
+              <div className="card-subtitle">
+                Select a stay option, then pick dates from the calendar.
+              </div>
             </div>
+            <span className="badge badge-success">Live</span>
           </div>
-          <span className="badge badge-success">Live</span>
-        </div>
 
-        {loadingConfigs ? (
-          <p className="muted">Loading stay options…</p>
-        ) : configs.length === 0 ? (
-          <p className="muted">
-            No configurations configured yet. Seed Supabase configurations to enable booking.
-          </p>
-        ) : (
-          <form onSubmit={handleSubmit} className="stack">
-            <div className="form-grid">
+          {loadingConfigs ? (
+            <p className="muted">Loading stay options…</p>
+          ) : configs.length === 0 ? (
+            <p className="muted">
+              No configurations configured yet. Seed Supabase configurations to enable booking.
+            </p>
+          ) : (
+            <form onSubmit={handleSubmit} className="stack">
               <div className="field">
                 <label>Stay option</label>
                 <select
                   value={selectedSlug}
-                  onChange={(e) => setSelectedSlug(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedSlug(e.target.value);
+                    // reset dates when switching options to avoid confusion
+                    setStartDate("");
+                    setEndDate("");
+                  }}
                 >
                   {configs.map((c) => (
                     <option key={c.id} value={c.slug}>
@@ -168,47 +147,60 @@ export default function BookPage() {
                     </option>
                   ))}
                 </select>
-                {selectedConfig?.slug && <span className="muted">{selectedConfig.slug}</span>}
+              </div>
+
+              <div className="card" style={{ padding: "1rem" }}>
+                <div className="card-title">Summary</div>
+                <div className="muted" style={{ marginTop: "0.35rem" }}>
+                  {startDate && endDate ? (
+                    <>
+                      Dates: {startDate} → {endDate}
+                      <br />
+                      Nights: {nights}
+                      <br />
+                      Total (estimate): ₹{Number(total).toFixed(0)}
+                    </>
+                  ) : (
+                    "Choose your check-in and check-out dates from the calendar."
+                  )}
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="btn-primary"
+                disabled={submitting || !selectedSlug || !startDate || !endDate}
+              >
+                {submitting ? "Submitting…" : "Request booking"}
+              </button>
+
+              {message && <p className="muted">{message}</p>}
+              {error && <p className="muted" style={{ color: "var(--error)" }}>{error}</p>}
+            </form>
+          )}
+        </div>
+
+        <div className="card">
+          <div className="card-header">
+            <div>
+              <div className="card-title">Select dates</div>
+              <div className="card-subtitle">
+                Booked days are crossed out (confirmed only).
               </div>
             </div>
-
-            <BookingCalendar
-              configurationSlug={selectedSlug}
-              mode="range"
-              startDate={startDate || undefined}
-              endDate={endDate || undefined}
-              onChangeRange={(range) => {
-                setStartDate(range.startDate);
-                setEndDate(range.endDate);
-              }}
-            />
-
-            <button
-              type="submit"
-              className="btn-primary"
-              disabled={submitting || !selectedSlug}
-            >
-              {submitting ? "Submitting…" : "Request booking"}
-            </button>
-
-            {message && <p className="muted">{message}</p>}
-            {error && <p className="muted" style={{ color: "var(--error)" }}>{error}</p>}
-          </form>
-        )}
-      </div>
-
-      <div className="card">
-        <div className="card-header">
-          <div>
-            <div className="card-title">Availability</div>
-            <div className="card-subtitle">
-              Confirmed stays that block this option (lock-based).
-            </div>
+            <span className="badge">Calendar</span>
           </div>
-          <span className="badge">Read only</span>
+          <BookingCalendar
+            configurationSlug={selectedSlug}
+            mode="range"
+            startDate={startDate || undefined}
+            endDate={endDate || undefined}
+            onChangeRange={(range) => {
+              setStartDate(range.startDate);
+              setEndDate(range.endDate);
+            }}
+          />
         </div>
-        {loadingAvailability && <p className="muted">Loading availability…</p>}
-        <BookingCalendar configurationSlug={selectedSlug} mode="readonly" />
       </div>
     </div>
   );
