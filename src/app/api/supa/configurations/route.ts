@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function GET() {
   try {
-    const supabase = createSupabaseAdminClient();
+    const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase
       .from("configurations")
       .select("id,slug,label,price_per_night,active")

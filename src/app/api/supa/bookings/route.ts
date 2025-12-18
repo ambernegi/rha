@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { requireSupabaseUser } from "@/lib/supabase/authz";
 import { sendEmailViaGmailApi } from "@/lib/email/gmail";
 
@@ -69,10 +68,10 @@ export async function POST(request: Request) {
   }
 
   try {
-    // Use service role to keep writes on a trusted backend (recommended).
-    const admin = createSupabaseAdminClient();
+    // Use the authenticated user's session; RLS enforces access.
+    const supabase = await auth.supabase;
 
-    const { data: config, error: configErr } = await admin
+    const { data: config, error: configErr } = await supabase
       .from("configurations")
       .select("id,price_per_night,active")
       .eq("slug", configurationSlug)
@@ -87,7 +86,7 @@ export async function POST(request: Request) {
 
     const totalPrice = Number(config.price_per_night) * nights;
 
-    const { data: booking, error: insertErr } = await admin
+    const { data: booking, error: insertErr } = await supabase
       .from("bookings")
       .insert({
         user_id: auth.user.id,

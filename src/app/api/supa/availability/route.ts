@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const availabilityQuerySchema = z.object({
   configurationSlug: z.string().min(1),
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const supabase = createSupabaseAdminClient();
+    const supabase = await createSupabaseServerClient();
 
     const { data: config, error: configErr } = await supabase
       .from("configurations")
