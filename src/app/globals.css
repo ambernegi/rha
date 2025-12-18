@@ -368,3 +368,93 @@ button {
     padding-inline: 1rem;
   }
 }
+
+/* Calendar */
+.calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.calendar-title {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.calendar-nav {
+  padding: 0.45rem 0.9rem;
+  border-radius: 0.8rem;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.calendar-cell {
+  position: relative;
+  height: 38px;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background: rgba(2, 6, 23, 0.75);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.calendar-cell--empty {
+  border-color: transparent;
+  background: transparent;
+}
+
+.calendar-cell--readonly {
+  cursor: default;
+}
+
+.calendar-cell--today {
+  border-color: rgba(79, 70, 229, 0.9);
+}
+
+.calendar-cell--booked {
+  color: rgba(229, 231, 235, 0.65);
+}
+
+.calendar-cell--booked::after {
+  content: "";
+  position: absolute;
+  inset: 50% 12%;
+  height: 2px;
+  background: rgba(239, 68, 68, 0.85);
+  transform: rotate(-18deg);
+  border-radius: 999px;
+}
+
+.calendar-cell--selected {
+  border-color: rgba(79, 70, 229, 0.95);
+  background: rgba(79, 70, 229, 0.22);
+}
+
+.calendar-cell--inrange {
+  background: rgba(79, 70, 229, 0.12);
+}

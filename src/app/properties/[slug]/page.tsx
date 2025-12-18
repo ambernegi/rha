@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { SHARED_AMENITIES, getPropertyBySlug } from "@/lib/properties";
 import { PropertyHeroGallery } from "./PropertyHeroGallery";
+import { BookingCalendar } from "@/components/BookingCalendar";
 
 export default function PropertyPage({ params }: any) {
   const property = getPropertyBySlug(params?.slug);
@@ -8,6 +10,16 @@ export default function PropertyPage({ params }: any) {
   if (!property) {
     return notFound();
   }
+
+  const bookingSlugByPropertySlug: Record<string, string> = {
+    "entire-villa": "entire_villa",
+    "3bhk-villa": "villa_3bhk",
+    // The "Single Rooms" variant is a category; default to an attached-bathroom room config.
+    "single-rooms": "attached_1",
+  };
+
+  const selectedConfigurationSlug =
+    bookingSlugByPropertySlug[property.slug] ?? "entire_villa";
 
   return (
     <div className="stack-lg">
@@ -93,10 +105,28 @@ export default function PropertyPage({ params }: any) {
           </div>
         </div>
         <div className="hero-actions">
-          <a href="/book" className="btn-primary">
-            Start booking
-          </a>
+          <Link
+            href={`/book?configurationSlug=${encodeURIComponent(
+              selectedConfigurationSlug,
+            )}`}
+            className="btn-primary"
+          >
+            Book Now
+          </Link>
         </div>
+      </div>
+
+      <div className="card">
+        <div className="card-header">
+          <div>
+            <div className="card-title">Availability</div>
+            <div className="card-subtitle">
+              Confirmed booked days are crossed out.
+            </div>
+          </div>
+          <span className="badge">Read only</span>
+        </div>
+        <BookingCalendar configurationSlug={selectedConfigurationSlug} mode="readonly" />
       </div>
     </div>
   );

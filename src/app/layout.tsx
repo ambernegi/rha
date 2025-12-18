@@ -22,6 +22,16 @@ export default async function RootLayout({
     user?.email ||
     null;
 
+  const isHost = user
+    ? (
+        await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .maybeSingle()
+      ).data?.role === "host"
+    : false;
+
   return (
     <html lang="en">
       <body>
@@ -34,7 +44,7 @@ export default async function RootLayout({
               <nav className="nav-links">
                 <Link href="/book">Book</Link>
                 <Link href="/dashboard">My bookings</Link>
-                <Link href="/admin">Owner</Link>
+                {isHost && <Link href="/admin">Owner</Link>}
               </nav>
               <div className="nav-auth">
                 {user ? (

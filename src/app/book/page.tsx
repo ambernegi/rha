@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { BookingCalendar } from "@/components/BookingCalendar";
 
 type Configuration = {
   id: string;
@@ -42,9 +43,20 @@ export default function BookPage() {
         if (!res.ok || "error" in data) {
           throw new Error((data as ApiError).error || "Failed to load configurations");
         }
-        setConfigs((data as { configurations: Configuration[] }).configurations);
-        if ((data as { configurations: Configuration[] }).configurations.length > 0) {
-          setSelectedSlug((data as { configurations: Configuration[] }).configurations[0].slug);
+        const configurations = (data as { configurations: Configuration[] }).configurations;
+        setConfigs(configurations);
+
+        // Optional deep-link preselect: /book?configurationSlug=entire_villa
+        const preferred =
+          typeof window !== "undefined"
+            ? new URLSearchParams(window.location.search).get("configurationSlug")
+            : null;
+        const preferredExists = preferred
+          ? configurations.some((c) => c.slug === preferred)
+          : false;
+
+        if (configurations.length > 0) {
+          setSelectedSlug(preferredExists ? (preferred as string) : configurations[0].slug);
         }
       } catch (err: any) {
         setError(err.message || "Failed to load configurations");
@@ -158,25 +170,18 @@ export default function BookPage() {
                 </select>
                 {selectedConfig?.slug && <span className="muted">{selectedConfig.slug}</span>}
               </div>
-
-              <div className="field">
-                <label>Check-in</label>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              </div>
-
-              <div className="field">
-                <label>Check-out</label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </div>
             </div>
+
+            <BookingCalendar
+              configurationSlug={selectedSlug}
+              mode="range"
+              startDate={startDate || undefined}
+              endDate={endDate || undefined}
+              onChangeRange={(range) => {
+                setStartDate(range.startDate);
+                setEndDate(range.endDate);
+              }}
+            />
 
             <button
               type="submit"
@@ -202,20 +207,8 @@ export default function BookPage() {
           </div>
           <span className="badge">Read only</span>
         </div>
-        {loadingAvailability ? (
-          <p className="muted">Loading availability…</p>
-        ) : locks.length === 0 ? (
-          <p className="muted">No confirmed locks yet for this option.</p>
-        ) : (
-          <ul className="stack">
-            {locks.map((l) => (
-              <li key={l.id} className="muted">
-                {new Date(l.start_date).toLocaleDateString()} →{" "}
-                {new Date(l.end_date).toLocaleDateString()} (unit {l.resource_id})
-              </li>
-            ))}
-          </ul>
-        )}
+        {loadingAvailability && <p className="muted">Loading availability…</p>}
+        <BookingCalendar configurationSlug={selectedSlug} mode="readonly" />
       </div>
     </div>
   );
