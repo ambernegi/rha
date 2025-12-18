@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { requireSupabaseUser } from "@/lib/supabase/authz";
+import { sendEmailViaGmailApi } from "@/lib/email/gmail";
 
 const createBookingSchema = z.object({
   configurationSlug: z.string().min(1),
@@ -105,7 +106,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Failed to create booking request" }, { status: 500 });
     }
 
-    // Note: Email notification will be added (Gmail API) after auth/admin flow is finalized.
+    // Email host notification (best-effort).
+    const hostEmail = process.env.HOST_EMAIL;
+    if (hostEmail) {
+      const subject = `New booking request: ${configurationSlug} (${startDate} → ${endDate})`;
+      const text = [
+        "New booking request received.",
+        "",
+        `Guest: ${auth.user.email ?? "Unknown"}`,
+        `Option: ${configurationSlug}`,
+        `Dates: ${startDate} → ${endDate}`,
+        `Total (estimate): ₹${totalPrice.toFixed(0)}`,
+        "",
+        `Booking ID: ${booking.id}`,
+      ].join("\n");
+      await sendEmailViaGmailApi({ to: hostEmail, subject, text });
+    }
+
     return NextResponse.json({ booking });
   } catch (err) {
     console.error("POST /api/supa/bookings error", err);

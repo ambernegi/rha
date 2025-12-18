@@ -2,75 +2,72 @@
 
 import { useEffect, useState } from "react";
 
-type Resource = {
+type Configuration = {
   id: string;
-  name: string;
-  description: string | null;
-  price: number;
-  parentId: string | null;
+  slug: string;
+  label: string;
+  price_per_night: number;
 };
 
-type BookingAvailability = {
+type BookingLock = {
   id: string;
-  resourceId: string;
-  startDate: string;
-  endDate: string;
+  resource_id: string;
+  start_date: string;
+  end_date: string;
+  booking_id: string;
 };
 
 type ApiError = { error: string };
 
 export default function BookPage() {
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [selectedResourceId, setSelectedResourceId] = useState<string>("");
+  const [configs, setConfigs] = useState<Configuration[]>([]);
+  const [selectedSlug, setSelectedSlug] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
-  const [availability, setAvailability] = useState<BookingAvailability[]>([]);
-  const [loadingResources, setLoadingResources] = useState(false);
+  const [locks, setLocks] = useState<BookingLock[]>([]);
+  const [loadingConfigs, setLoadingConfigs] = useState(false);
   const [loadingAvailability, setLoadingAvailability] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadResources = async () => {
-      setLoadingResources(true);
+    const loadConfigurations = async () => {
+      setLoadingConfigs(true);
       try {
-        const res = await fetch("/api/resources");
-        const data = (await res.json()) as { resources?: Resource[] } & ApiError;
-        if (!res.ok || !data.resources) {
-          throw new Error(data.error || "Failed to load resources");
+        const res = await fetch("/api/supa/configurations");
+        const data = (await res.json()) as
+          | { configurations: Configuration[] }
+          | ApiError;
+        if (!res.ok || "error" in data) {
+          throw new Error((data as ApiError).error || "Failed to load configurations");
         }
-        setResources(data.resources);
-        if (data.resources.length > 0) {
-          setSelectedResourceId(data.resources[0].id);
+        setConfigs((data as { configurations: Configuration[] }).configurations);
+        if ((data as { configurations: Configuration[] }).configurations.length > 0) {
+          setSelectedSlug((data as { configurations: Configuration[] }).configurations[0].slug);
         }
       } catch (err: any) {
-        setError(err.message || "Failed to load resources");
+        setError(err.message || "Failed to load configurations");
       } finally {
-        setLoadingResources(false);
+        setLoadingConfigs(false);
       }
     };
 
-    void loadResources();
+    void loadConfigurations();
   }, []);
 
   useEffect(() => {
     const loadAvailability = async () => {
-      if (!selectedResourceId) return;
+      if (!selectedSlug) return;
       setLoadingAvailability(true);
       try {
-        const res = await fetch(
-          `/api/bookings/availability?resourceId=${selectedResourceId}`,
-        );
-        const data = (await res.json()) as
-          | { bookings: BookingAvailability[] }
-          | ApiError;
+        const query = new URLSearchParams({ configurationSlug: selectedSlug });
+        const res = await fetch(`/api/supa/availability?${query.toString()}`);
+        const data = (await res.json()) as { locks?: BookingLock[] } | ApiError;
         if (!res.ok || "error" in data) {
-          throw new Error(
-            (data as ApiError).error || "Failed to load availability",
-          );
+          throw new Error((data as ApiError).error || "Failed to load availability");
         }
-        setAvailability(data.bookings);
+        setLocks((data as { locks?: BookingLock[] }).locks ?? []);
       } catch (err: any) {
         setError(err.message || "Failed to load availability");
       } finally {
@@ -79,30 +76,27 @@ export default function BookPage() {
     };
 
     void loadAvailability();
-  }, [selectedResourceId]);
+  }, [selectedSlug]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage(null);
     setError(null);
 
-    if (!selectedResourceId || !startDate || !endDate) {
-      setError("Please select a resource and dates.");
+    if (!selectedSlug || !startDate || !endDate) {
+      setError("Please select a stay option and dates.");
       return;
     }
 
-    const startIso = new Date(startDate).toISOString();
-    const endIso = new Date(endDate).toISOString();
-
     setSubmitting(true);
     try {
-      const res = await fetch("/api/bookings", {
+      const res = await fetch("/api/supa/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          resourceId: selectedResourceId,
-          startDate: startIso,
-          endDate: endIso,
+          configurationSlug: selectedSlug,
+          startDate,
+          endDate,
         }),
       });
       const data = (await res.json()) as ApiError | { booking: unknown };
@@ -111,16 +105,13 @@ export default function BookPage() {
         throw new Error((data as ApiError).error || "Failed to create booking");
       }
 
-      setMessage("Booking confirmed! You can see it in your dashboard.");
-      // Refresh availability after successful booking
-      const availRes = await fetch(
-        `/api/bookings/availability?resourceId=${selectedResourceId}`,
-      );
+      setMessage("Booking request submitted! Awaiting host confirmation.");
+      // Refresh availability (locks won't change until confirmed, but keeps UI consistent)
+      const query = new URLSearchParams({ configurationSlug: selectedSlug });
+      const availRes = await fetch(`/api/supa/availability?${query.toString()}`);
       if (availRes.ok) {
-        const availData = (await availRes.json()) as {
-          bookings: BookingAvailability[];
-        };
-        setAvailability(availData.bookings);
+        const availData = (await availRes.json()) as { locks?: BookingLock[] };
+        setLocks(availData.locks ?? []);
       }
     } catch (err: any) {
       setError(err.message || "Failed to create booking");
@@ -129,7 +120,7 @@ export default function BookPage() {
     }
   };
 
-  const selectedResource = resources.find((r) => r.id === selectedResourceId);
+  const selectedConfig = configs.find((c) => c.slug === selectedSlug);
 
   return (
     <div className="stack-lg">
@@ -144,30 +135,28 @@ export default function BookPage() {
           <span className="badge badge-success">Live</span>
         </div>
 
-        {loadingResources ? (
-          <p className="muted">Loading resources…</p>
-        ) : resources.length === 0 ? (
+        {loadingConfigs ? (
+          <p className="muted">Loading stay options…</p>
+        ) : configs.length === 0 ? (
           <p className="muted">
-            No resources configured yet. Add villa and rooms via Prisma Studio.
+            No configurations configured yet. Seed Supabase configurations to enable booking.
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="stack">
             <div className="form-grid">
               <div className="field">
-                <label>Resource</label>
+                <label>Stay option</label>
                 <select
-                  value={selectedResourceId}
-                  onChange={(e) => setSelectedResourceId(e.target.value)}
+                  value={selectedSlug}
+                  onChange={(e) => setSelectedSlug(e.target.value)}
                 >
-                  {resources.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.name} – ${r.price.toFixed(0)}/night
+                  {configs.map((c) => (
+                    <option key={c.id} value={c.slug}>
+                      {c.label} – ₹{Number(c.price_per_night).toFixed(0)}/night
                     </option>
                   ))}
                 </select>
-                {selectedResource?.description && (
-                  <span className="muted">{selectedResource.description}</span>
-                )}
+                {selectedConfig?.slug && <span className="muted">{selectedConfig.slug}</span>}
               </div>
 
               <div className="field">
@@ -192,9 +181,9 @@ export default function BookPage() {
             <button
               type="submit"
               className="btn-primary"
-              disabled={submitting || !selectedResourceId}
+              disabled={submitting || !selectedSlug}
             >
-              {submitting ? "Booking…" : "Confirm booking"}
+              {submitting ? "Submitting…" : "Request booking"}
             </button>
 
             {message && <p className="muted">{message}</p>}
@@ -208,21 +197,21 @@ export default function BookPage() {
           <div>
             <div className="card-title">Availability</div>
             <div className="card-subtitle">
-              Existing bookings that block this resource (parent/children aware).
+              Confirmed stays that block this option (lock-based).
             </div>
           </div>
           <span className="badge">Read only</span>
         </div>
         {loadingAvailability ? (
           <p className="muted">Loading availability…</p>
-        ) : availability.length === 0 ? (
-          <p className="muted">No conflicting bookings yet for this resource.</p>
+        ) : locks.length === 0 ? (
+          <p className="muted">No confirmed locks yet for this option.</p>
         ) : (
           <ul className="stack">
-            {availability.map((b) => (
-              <li key={b.id} className="muted">
-                {new Date(b.startDate).toLocaleDateString()} →{" "}
-                {new Date(b.endDate).toLocaleDateString()} (resource {b.resourceId})
+            {locks.map((l) => (
+              <li key={l.id} className="muted">
+                {new Date(l.start_date).toLocaleDateString()} →{" "}
+                {new Date(l.end_date).toLocaleDateString()} (unit {l.resource_id})
               </li>
             ))}
           </ul>

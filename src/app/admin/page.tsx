@@ -4,18 +4,17 @@ import { useEffect, useState } from "react";
 
 type AdminBooking = {
   id: string;
-  startDate: string;
-  endDate: string;
-  totalPrice: number;
-  status: "PENDING" | "CONFIRMED" | "CANCELLED";
-  user: {
-    id: string;
-    name: string | null;
-    email: string | null;
-  };
-  resource: {
-    id: string;
-    name: string;
+  start_date: string;
+  end_date: string;
+  total_price: number;
+  status: "pending" | "confirmed" | "rejected" | "cancelled";
+  guest_email: string | null;
+  guest_name: string | null;
+  decision_note: string | null;
+  configuration: {
+    slug: string;
+    label: string;
+    price_per_night: number;
   };
 };
 
@@ -31,7 +30,7 @@ export default function AdminPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/bookings");
+      const res = await fetch("/api/supa/admin/bookings");
       const data = (await res.json()) as { bookings?: AdminBooking[] } & ApiError;
       if (!res.ok || !data.bookings) {
         throw new Error(data.error || "Failed to load bookings");
@@ -48,14 +47,17 @@ export default function AdminPage() {
     void loadBookings();
   }, []);
 
-  const updateStatus = async (id: string, status: AdminBooking["status"]) => {
+  const updateBooking = async (
+    id: string,
+    action: "confirm" | "reject" | "cancel",
+  ) => {
     setUpdatingId(id);
     setError(null);
     try {
-      const res = await fetch("/api/admin/bookings", {
+      const res = await fetch("/api/supa/admin/bookings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status }),
+        body: JSON.stringify({ id, action }),
       });
       const data = (await res.json()) as ApiError | { booking: AdminBooking };
       if (!res.ok || "error" in data) {
@@ -71,13 +73,13 @@ export default function AdminPage() {
 
   const statusChip = (status: AdminBooking["status"]) => {
     let dotClass = "chip-dot-success";
-    if (status === "PENDING") dotClass = "chip-dot-warning";
-    if (status === "CANCELLED") dotClass = "chip-dot-error";
+    if (status === "pending") dotClass = "chip-dot-warning";
+    if (status === "cancelled" || status === "rejected") dotClass = "chip-dot-error";
 
     return (
       <span className="chip">
         <span className={`chip-dot ${dotClass}`} />
-        {status.toLowerCase()}
+        {status}
       </span>
     );
   };
@@ -111,7 +113,7 @@ export default function AdminPage() {
             <thead>
               <tr>
                 <th>Guest</th>
-                <th>Resource</th>
+                <th>Stay option</th>
                 <th>Dates</th>
                 <th>Total</th>
                 <th>Status</th>
@@ -122,17 +124,17 @@ export default function AdminPage() {
               {bookings.map((b) => (
                 <tr key={b.id}>
                   <td>
-                    <div>{b.user.name || "Unknown"}</div>
+                    <div>{b.guest_name || "Unknown"}</div>
                     <div className="muted" style={{ fontSize: "0.8rem" }}>
-                      {b.user.email}
+                      {b.guest_email}
                     </div>
                   </td>
-                  <td>{b.resource.name}</td>
+                  <td>{b.configuration.label}</td>
                   <td>
-                    {new Date(b.startDate).toLocaleDateString()} →{" "}
-                    {new Date(b.endDate).toLocaleDateString()}
+                    {new Date(b.start_date).toLocaleDateString()} →{" "}
+                    {new Date(b.end_date).toLocaleDateString()}
                   </td>
-                  <td>${b.totalPrice.toFixed(0)}</td>
+                  <td>₹{Number(b.total_price).toFixed(0)}</td>
                   <td>{statusChip(b.status)}</td>
                   <td>
                     <div style={{ display: "flex", gap: "0.35rem" }}>
@@ -141,7 +143,7 @@ export default function AdminPage() {
                         className="btn-secondary"
                         style={{ padding: "0.3rem 0.7rem", fontSize: "0.8rem" }}
                         disabled={updatingId === b.id}
-                        onClick={() => updateStatus(b.id, "CONFIRMED")}
+                        onClick={() => updateBooking(b.id, "confirm")}
                       >
                         Confirm
                       </button>
@@ -150,9 +152,9 @@ export default function AdminPage() {
                         className="btn-secondary"
                         style={{ padding: "0.3rem 0.7rem", fontSize: "0.8rem" }}
                         disabled={updatingId === b.id}
-                        onClick={() => updateStatus(b.id, "PENDING")}
+                        onClick={() => updateBooking(b.id, "reject")}
                       >
-                        Pending
+                        Reject
                       </button>
                       <button
                         type="button"
@@ -164,7 +166,7 @@ export default function AdminPage() {
                           color: "var(--error)",
                         }}
                         disabled={updatingId === b.id}
-                        onClick={() => updateStatus(b.id, "CANCELLED")}
+                        onClick={() => updateBooking(b.id, "cancel")}
                       >
                         Cancel
                       </button>

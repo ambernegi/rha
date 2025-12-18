@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 
 type Booking = {
   id: string;
-  startDate: string;
-  endDate: string;
-  totalPrice: number;
-  status: "PENDING" | "CONFIRMED" | "CANCELLED";
-  resource: {
-    id: string;
-    name: string;
+  start_date: string;
+  end_date: string;
+  total_price: number;
+  status: "pending" | "confirmed" | "rejected" | "cancelled";
+  configuration: {
+    slug: string;
+    label: string;
+    price_per_night: number;
   };
 };
 
@@ -26,7 +27,7 @@ export default function DashboardPage() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/bookings");
+        const res = await fetch("/api/supa/bookings");
         const data = (await res.json()) as { bookings?: Booking[] } & ApiError;
         if (!res.ok || !data.bookings) {
           throw new Error(data.error || "Failed to load bookings");
@@ -44,13 +45,13 @@ export default function DashboardPage() {
 
   const statusChip = (status: Booking["status"]) => {
     let dotClass = "chip-dot-success";
-    if (status === "PENDING") dotClass = "chip-dot-warning";
-    if (status === "CANCELLED") dotClass = "chip-dot-error";
+    if (status === "pending") dotClass = "chip-dot-warning";
+    if (status === "cancelled" || status === "rejected") dotClass = "chip-dot-error";
 
     return (
       <span className="chip">
         <span className={`chip-dot ${dotClass}`} />
-        {status.toLowerCase()}
+        {status}
       </span>
     );
   };
@@ -85,7 +86,7 @@ export default function DashboardPage() {
           <table className="table">
             <thead>
               <tr>
-                <th>Resource</th>
+                <th>Stay option</th>
                 <th>Dates</th>
                 <th>Total</th>
                 <th>Status</th>
@@ -94,12 +95,12 @@ export default function DashboardPage() {
             <tbody>
               {bookings.map((b) => (
                 <tr key={b.id}>
-                  <td>{b.resource.name}</td>
+                  <td>{b.configuration.label}</td>
                   <td>
-                    {new Date(b.startDate).toLocaleDateString()} →{" "}
-                    {new Date(b.endDate).toLocaleDateString()}
+                    {new Date(b.start_date).toLocaleDateString()} →{" "}
+                    {new Date(b.end_date).toLocaleDateString()}
                   </td>
-                  <td>${b.totalPrice.toFixed(0)}</td>
+                  <td>₹{Number(b.total_price).toFixed(0)}</td>
                   <td>{statusChip(b.status)}</td>
                 </tr>
               ))}

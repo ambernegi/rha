@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { requireHost } from "@/lib/supabase/authz";
+import { sendEmailViaGmailApi } from "@/lib/email/gmail";
 
 const updateSchema = z.object({
   id: z.string().uuid(),
@@ -58,6 +59,20 @@ export async function PATCH(request: Request) {
         // Constraint violations typically bubble here when locks overlap.
         return NextResponse.json({ error: "Unable to confirm booking (may conflict)" }, { status: 409 });
       }
+      // Best-effort email to guest.
+      if (data?.guest_email) {
+        await sendEmailViaGmailApi({
+          to: data.guest_email,
+          subject: "Your booking is confirmed",
+          text: [
+            "Your booking has been confirmed.",
+            "",
+            `Stay option: ${data.configuration_id}`,
+            `Dates: ${data.start_date} → ${data.end_date}`,
+            `Booking ID: ${data.id}`,
+          ].join("\n"),
+        });
+      }
       return NextResponse.json({ booking: data });
     }
 
@@ -68,6 +83,21 @@ export async function PATCH(request: Request) {
       });
       if (error) {
         return NextResponse.json({ error: "Unable to reject booking" }, { status: 400 });
+      }
+      if (data?.guest_email) {
+        await sendEmailViaGmailApi({
+          to: data.guest_email,
+          subject: "Your booking request was not approved",
+          text: [
+            "Your booking request was not approved.",
+            "",
+            `Dates: ${data.start_date} → ${data.end_date}`,
+            data.decision_note ? `Note: ${data.decision_note}` : "",
+            `Booking ID: ${data.id}`,
+          ]
+            .filter(Boolean)
+            .join("\n"),
+        });
       }
       return NextResponse.json({ booking: data });
     }
@@ -95,6 +125,22 @@ export async function PATCH(request: Request) {
 
     if (updErr) {
       return NextResponse.json({ error: "Unable to cancel booking" }, { status: 500 });
+    }
+
+    if (updated?.guest_email) {
+      await sendEmailViaGmailApi({
+        to: updated.guest_email,
+        subject: "Your booking was cancelled",
+        text: [
+          "Your booking was cancelled by the host.",
+          "",
+          `Dates: ${updated.start_date} → ${updated.end_date}`,
+          updated.decision_note ? `Note: ${updated.decision_note}` : "",
+          `Booking ID: ${updated.id}`,
+        ]
+          .filter(Boolean)
+          .join("\n"),
+      });
     }
 
     return NextResponse.json({ booking: updated });
