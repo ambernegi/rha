@@ -41,28 +41,31 @@ export default async function RootLayout({
               <Link href="/" className="logo">
                 RHA Villa
               </Link>
-              <nav className="nav-links">
-                <Link href="/book">Book</Link>
-                <Link href="/dashboard">My bookings</Link>
-                {isHost && <Link href="/admin">Owner</Link>}
-              </nav>
+              <nav className="nav-links">{isHost && <Link href="/admin">Owner</Link>}</nav>
               <div className="nav-auth">
-                {user ? (
-                  <>
-                    <Link href="/dashboard" className="nav-auth-link">
-                      {displayName}
-                    </Link>
-                    <form method="post" action="/logout" style={{ display: "inline" }}>
-                      <button type="submit" className="nav-auth-link">
-                        Sign out
-                      </button>
-                    </form>
-                  </>
-                ) : (
-                  <a href="/login" className="nav-auth-link">
-                    Sign in
-                  </a>
-                )}
+                <details className="nav-dropdown">
+                  <summary className="nav-auth-link">
+                    {user ? displayName : "Sign in"}
+                  </summary>
+                  <div className="nav-dropdown-menu">
+                    {user ? (
+                      <>
+                        <Link href="/dashboard" className="nav-dropdown-item">
+                          My bookings
+                        </Link>
+                        <form method="post" action="/logout" style={{ margin: 0 }}>
+                          <button type="submit" className="nav-dropdown-item nav-dropdown-button">
+                            Sign out
+                          </button>
+                        </form>
+                      </>
+                    ) : (
+                      <Link href="/login" className="nav-dropdown-item">
+                        Sign in with Google
+                      </Link>
+                    )}
+                  </div>
+                </details>
               </div>
             </div>
           </header>

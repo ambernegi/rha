@@ -13,8 +13,8 @@ export default function Home() {
             availability and instant confirmation.
           </p>
           <div className="hero-actions">
-            <Link href="/book" className="btn-primary">
-              Book now
+            <Link href="/properties/entire-villa" className="btn-primary">
+              View stays
             </Link>
             <Link href="/dashboard" className="btn-secondary">
               View my bookings

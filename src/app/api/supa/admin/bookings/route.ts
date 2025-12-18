@@ -20,7 +20,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from("bookings")
       .select(
-        "id,start_date,end_date,status,total_price,created_at,confirmed_at,guest_email,guest_name,decision_note,configuration:configurations(slug,label,price_per_night)",
+        "id,start_date,end_date,status,total_price,created_at,confirmed_at,guest_email,guest_name,decision_note,source,configuration:configurations(slug,label,price_per_night)",
       )
       .order("created_at", { ascending: false });
 
