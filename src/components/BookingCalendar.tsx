@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   addDays,
   addMonths,
@@ -165,8 +165,30 @@ export function BookingCalendar(props: Props) {
   // Today marker (UTC day)
   const todayIso = useMemo(() => formatIsoDateOnly(clampToUtcStartOfDay(new Date())), []);
 
+  // Mobile gesture: swipe left/right to change month.
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    touchStart.current = { x: t.clientX, y: t.clientY };
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const start = touchStart.current;
+    touchStart.current = null;
+    if (!start) return;
+
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+
+    // Ignore mostly vertical gestures (scroll).
+    if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy)) return;
+
+    if (dx < 0) setMonth((m) => startOfMonth(addMonths(m, 1)));
+    else setMonth((m) => startOfMonth(addMonths(m, -1)));
+  };
+
   return (
-    <div className="calendar">
+    <div className="calendar" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       <div className="calendar-header">
         <button
           type="button"

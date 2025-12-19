@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { BookingCalendar } from "@/components/BookingCalendar";
+import { LoginModal } from "@/components/LoginModal";
 
 type Configuration = {
   id: string;
@@ -19,8 +20,20 @@ export default function BookPage() {
   const [endDate, setEndDate] = useState<string>("");
   const [loadingConfigs, setLoadingConfigs] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Allow returning from login with preserved choices:
+    // /book?configurationSlug=...&startDate=YYYY-MM-DD&endDate=YYYY-MM-DD
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const s = params.get("startDate");
+    const e = params.get("endDate");
+    if (s) setStartDate(s);
+    if (e) setEndDate(e);
+  }, []);
 
   useEffect(() => {
     const loadConfigurations = async () => {
@@ -81,6 +94,19 @@ export default function BookPage() {
       });
       const data = (await res.json()) as ApiError | { booking: unknown };
 
+      if (res.status === 401) {
+        // Keep state in-place and prompt login. Also preserve choices in the URL for after OAuth redirect.
+        if (typeof window !== "undefined") {
+          const url = new URL(window.location.href);
+          url.searchParams.set("configurationSlug", selectedSlug);
+          url.searchParams.set("startDate", startDate);
+          url.searchParams.set("endDate", endDate);
+          window.history.replaceState({}, "", url.toString());
+        }
+        setShowLogin(true);
+        return;
+      }
+
       if (!res.ok || "error" in data) {
         throw new Error((data as ApiError).error || "Failed to create booking");
       }
@@ -110,6 +136,15 @@ export default function BookPage() {
 
   return (
     <div className="stack-lg">
+      <LoginModal
+        open={showLogin}
+        nextPath={
+          typeof window !== "undefined"
+            ? `${window.location.pathname}${window.location.search}`
+            : "/book"
+        }
+        onClose={() => setShowLogin(false)}
+      />
       <div className="booking-grid">
         <div className="card">
           <div className="card-header">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import type { PropertyVariant } from "@/lib/properties";
 
@@ -9,7 +9,10 @@ type Props = {
 };
 
 export function PropertyHeroGallery({ property }: Props) {
-  const [open, setOpen] = useState(false);
+  const [gridOpen, setGridOpen] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
 
   const images = property.gallery.length
     ? property.gallery
@@ -23,6 +26,40 @@ export function PropertyHeroGallery({ property }: Props) {
   const [first, ...rest] = images;
   const secondary = rest.slice(0, 4);
   const extraCount = Math.max(0, images.length - 5);
+
+  const openLightbox = (index: number) => {
+    setActiveIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const closeLightbox = () => setLightboxOpen(false);
+
+  const goPrev = () => setActiveIndex((i) => (i - 1 + images.length) % images.length);
+  const goNext = () => setActiveIndex((i) => (i + 1) % images.length);
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") goPrev();
+      if (e.key === "ArrowRight") goNext();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [lightboxOpen, images.length]);
+
+  // Prevent background scroll when any modal is open (mobile UX).
+  useEffect(() => {
+    const open = gridOpen || lightboxOpen;
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [gridOpen, lightboxOpen]);
+
+  const active = useMemo(() => images[activeIndex], [images, activeIndex]);
 
   return (
     <>
@@ -51,10 +88,23 @@ export function PropertyHeroGallery({ property }: Props) {
                 objectFit: "cover",
               }}
             />
+            <button
+              type="button"
+              onClick={() => openLightbox(0)}
+              style={{
+                position: "absolute",
+                inset: 0,
+                background: "transparent",
+                border: "none",
+                cursor: "zoom-in",
+              }}
+              aria-label="Open photo"
+            />
           </div>
 
           {secondary.map((img, index) => {
             const isLast = index === secondary.length - 1;
+            const absoluteIndex = index + 1;
 
             return (
               <div
@@ -74,10 +124,22 @@ export function PropertyHeroGallery({ property }: Props) {
                     objectFit: "cover",
                   }}
                 />
+                <button
+                  type="button"
+                  onClick={() => openLightbox(absoluteIndex)}
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "transparent",
+                    border: "none",
+                    cursor: "zoom-in",
+                  }}
+                  aria-label="Open photo"
+                />
                 {isLast && (
                   <button
                     type="button"
-                    onClick={() => setOpen(true)}
+                    onClick={() => setGridOpen(true)}
                     style={{
                       position: "absolute",
                       right: "0.75rem",
@@ -100,7 +162,7 @@ export function PropertyHeroGallery({ property }: Props) {
         </div>
       </div>
 
-      {open && (
+      {gridOpen && (
         <div
           style={{
             position: "fixed",
@@ -143,7 +205,7 @@ export function PropertyHeroGallery({ property }: Props) {
               </div>
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={() => setGridOpen(false)}
                 style={{
                   borderRadius: "999px",
                   border: "1px solid rgba(148,163,184,0.6)",
@@ -171,7 +233,7 @@ export function PropertyHeroGallery({ property }: Props) {
                   gap: "0.9rem",
                 }}
               >
-                {images.map((img) => (
+                {images.map((img, idx) => (
                   <figure key={img.src} style={{ margin: 0 }}>
                     <div
                       style={{
@@ -190,6 +252,21 @@ export function PropertyHeroGallery({ property }: Props) {
                           objectFit: "cover",
                         }}
                       />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setGridOpen(false);
+                          openLightbox(idx);
+                        }}
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          background: "transparent",
+                          border: "none",
+                          cursor: "zoom-in",
+                        }}
+                        aria-label="Open photo"
+                      />
                     </div>
                     <figcaption
                       style={{
@@ -203,6 +280,79 @@ export function PropertyHeroGallery({ property }: Props) {
                   </figure>
                 ))}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {lightboxOpen && active && (
+        <div
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => closeLightbox()}
+        >
+          <div
+            className="modal"
+            style={{ width: "min(1100px, 100%)", padding: "0.9rem" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "0.75rem",
+                marginBottom: "0.75rem",
+              }}
+            >
+              <div className="muted">
+                {activeIndex + 1} / {images.length}
+              </div>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button type="button" className="btn-secondary" onClick={() => goPrev()}>
+                  Prev
+                </button>
+                <button type="button" className="btn-secondary" onClick={() => goNext()}>
+                  Next
+                </button>
+                <button type="button" className="btn-secondary" onClick={() => closeLightbox()}>
+                  Close
+                </button>
+              </div>
+            </div>
+
+            <div
+              style={{
+                position: "relative",
+                width: "100%",
+                aspectRatio: "16 / 9",
+                borderRadius: "0.9rem",
+                overflow: "hidden",
+                border: "1px solid rgba(148,163,184,0.35)",
+              }}
+              onTouchStart={(e) => {
+                const t = e.touches[0];
+                setTouchStart({ x: t.clientX, y: t.clientY });
+              }}
+              onTouchEnd={(e) => {
+                if (!touchStart) return;
+                const t = e.changedTouches[0];
+                const dx = t.clientX - touchStart.x;
+                const dy = t.clientY - touchStart.y;
+                setTouchStart(null);
+                if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy)) return;
+                if (dx < 0) goNext();
+                else goPrev();
+              }}
+            >
+              <Image
+                src={active.src}
+                alt={active.label || property.name}
+                fill
+                sizes="(min-width: 768px) 80vw, 100vw"
+                style={{ objectFit: "contain", background: "#000" }}
+              />
             </div>
           </div>
         </div>
