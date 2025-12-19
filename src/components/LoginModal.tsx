@@ -22,6 +22,10 @@ export function LoginModal({ open, nextPath, onClose }: Props) {
   if (!open) return null;
 
   const signIn = async () => {
+    // Preserve where to return after OAuth, even if the provider/Supabase sends us to `/`.
+    // SECURITY: `nextPath` is generated internally as a relative path.
+    sessionStorage.setItem("rha_next_after_login", nextPath);
+
     const supabase = createSupabaseBrowserClient();
     const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
       nextPath,

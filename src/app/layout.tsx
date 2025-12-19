@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { PostLoginRedirect } from "@/components/PostLoginRedirect";
 
 export const metadata: Metadata = {
   title: "RHA Villa Booking",
@@ -35,6 +36,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
+        <PostLoginRedirect />
         <div className="app-shell">
           <header className="app-header">
             <div className="app-header-inner">
