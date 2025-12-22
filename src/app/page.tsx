@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { PROPERTY_VARIANTS } from "@/lib/properties";
+import { COMMON_GALLERY } from "@/lib/commonGallery";
+import { GalleryLightbox } from "@/components/GalleryLightbox";
 
 export default function Home() {
   return (
@@ -42,6 +44,19 @@ export default function Home() {
       <div className="card">
         <div className="card-header">
           <div>
+            <div className="card-title">Common spaces</div>
+            <div className="card-subtitle">
+              Outdoors and shared areas — tap to view full-size photos.
+            </div>
+          </div>
+          <span className="badge">Gallery</span>
+        </div>
+        <GalleryLightbox title="RHA Villa — Common spaces" images={COMMON_GALLERY} />
+      </div>
+
+      <div className="card">
+        <div className="card-header">
+          <div>
             <div className="card-title">Stay options</div>
             <div className="card-subtitle">
               Explore the three configurations of RHA Villa and pick your
@@ -52,7 +67,11 @@ export default function Home() {
 
         <div className="form-grid">
           {PROPERTY_VARIANTS.map((property) => (
-            <div key={property.slug} className="card">
+            <Link
+              key={property.slug}
+              href={`/properties/${property.slug}`}
+              className="card card-link"
+            >
               <div style={{ marginBottom: "0.75rem" }}>
                 <Image
                   src={property.mainImage}
@@ -78,13 +97,10 @@ export default function Home() {
               <p className="muted" style={{ marginBottom: "0.75rem" }}>
                 {property.description}
               </p>
-              <Link
-                href={`/properties/${property.slug}`}
-                className="btn-secondary"
-              >
+              <span className="btn-secondary" style={{ width: "fit-content" }}>
                 View details
-              </Link>
-            </div>
+              </span>
+            </Link>
           ))}
         </div>
       </div>
