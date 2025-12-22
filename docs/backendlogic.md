@@ -284,6 +284,16 @@ If Gmail API setup is too heavy, services like Resend often have a free tier and
 
 This is not “Gmail”, but it satisfies “free email notifications” more reliably than SMTP on Vercel.
 
+---
+
+## Mobile Auth via OTP (Phone)
+
+The app supports **Supabase phone OTP** sign-in in addition to Google.
+
+Important note about “free”:
+- The OTP feature is free to implement, but **SMS delivery is typically not truly free**. Supabase phone auth requires an SMS provider configuration and messages may incur costs depending on your plan/provider.
+
+
 ### When to send emails
 
 - On `pending` booking creation: email host with request details

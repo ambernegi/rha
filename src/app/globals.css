@@ -559,6 +559,40 @@ button {
   padding: 1.1rem 1.2rem 1.2rem;
 }
 
+/* Lightbox */
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  background: rgba(2, 6, 23, 0.55);
+  color: var(--text);
+  font-size: 1.8rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.lightbox-nav--left {
+  left: 0.6rem;
+}
+
+.lightbox-nav--right {
+  right: 0.6rem;
+}
+
+/* Hide side buttons on touch devices (swipe instead) */
+@media (pointer: coarse) {
+  .lightbox-nav {
+    display: none;
+  }
+}
+
 /* Mobile-first tuning */
 @media (max-width: 520px) {
   .calendar-weekdays,

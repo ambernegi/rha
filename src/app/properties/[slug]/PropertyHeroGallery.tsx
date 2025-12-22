@@ -309,20 +309,13 @@ export function PropertyHeroGallery({ property }: Props) {
               <div className="muted">
                 {activeIndex + 1} / {images.length}
               </div>
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <button type="button" className="btn-secondary" onClick={() => goPrev()}>
-                  Prev
-                </button>
-                <button type="button" className="btn-secondary" onClick={() => goNext()}>
-                  Next
-                </button>
-                <button type="button" className="btn-secondary" onClick={() => closeLightbox()}>
-                  Close
-                </button>
-              </div>
+              <button type="button" className="btn-secondary" onClick={() => closeLightbox()}>
+                Close
+              </button>
             </div>
 
             <div
+              className="lightbox-stage"
               style={{
                 position: "relative",
                 width: "100%",
@@ -353,6 +346,23 @@ export function PropertyHeroGallery({ property }: Props) {
                 sizes="(min-width: 768px) 80vw, 100vw"
                 style={{ objectFit: "contain", background: "#000" }}
               />
+
+              <button
+                type="button"
+                className="lightbox-nav lightbox-nav--left"
+                onClick={() => goPrev()}
+                aria-label="Previous photo"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                className="lightbox-nav lightbox-nav--right"
+                onClick={() => goNext()}
+                aria-label="Next photo"
+              >
+                ›
+              </button>
             </div>
           </div>
         </div>
