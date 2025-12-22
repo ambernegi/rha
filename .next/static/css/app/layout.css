@@ -115,6 +115,19 @@ button {
   position: relative;
 }
 
+.nav-auth-link--chevron {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-auth-link--chevron::after {
+  content: "⌄";
+  font-size: 0.95em;
+  color: var(--text-muted);
+  display: inline-block;
+}
+
 .nav-dropdown summary {
   list-style: none;
   cursor: pointer;

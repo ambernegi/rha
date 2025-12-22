@@ -3,12 +3,16 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { PhoneNumberInput, toE164Phone } from "@/components/PhoneNumberInput";
 
 export default function LoginClient() {
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState<{ countryIso2: string; nationalNumber: string }>({
+    countryIso2: "in",
+    nationalNumber: "",
+  });
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
 
@@ -44,10 +48,8 @@ export default function LoginClient() {
     setLoading(true);
     try {
       const supabase = createSupabaseBrowserClient();
-      const normalized = phone.trim();
-      if (!normalized.startsWith("+")) {
-        throw new Error("Enter phone in international format, e.g. +91XXXXXXXXXX");
-      }
+      const normalized = toE164Phone(phone);
+      if (!normalized) throw new Error("Enter a valid phone number.");
 
       const { error: otpErr } = await supabase.auth.signInWithOtp({
         phone: normalized,
@@ -56,7 +58,14 @@ export default function LoginClient() {
 
       setOtpSent(true);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to send OTP");
+      const msg = e?.message ?? "Failed to send OTP";
+      if (String(msg).toLowerCase().includes("unsupported phone provider")) {
+        setError(
+          "OTP is not enabled in Supabase for this project. Enable Authentication → Providers → Phone, and configure an SMS provider to send OTPs.",
+        );
+      } else {
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }
@@ -67,11 +76,9 @@ export default function LoginClient() {
     setLoading(true);
     try {
       const supabase = createSupabaseBrowserClient();
-      const normalized = phone.trim();
+      const normalized = toE164Phone(phone);
       const token = otp.trim();
-      if (!normalized.startsWith("+")) {
-        throw new Error("Enter phone in international format, e.g. +91XXXXXXXXXX");
-      }
+      if (!normalized) throw new Error("Enter a valid phone number.");
       if (token.length < 4) {
         throw new Error("Enter the OTP sent to your phone");
       }
@@ -119,15 +126,7 @@ export default function LoginClient() {
             Enter your phone number in international format.
           </div>
           <div className="form-grid" style={{ marginTop: "0.75rem" }}>
-            <div className="field">
-              <label>Phone</label>
-              <input
-                inputMode="tel"
-                placeholder="+91XXXXXXXXXX"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-            </div>
+            <PhoneNumberInput value={phone} onChange={setPhone} defaultCountryIso2="in" />
             {otpSent && (
               <div className="field">
                 <label>OTP</label>
@@ -145,7 +144,7 @@ export default function LoginClient() {
               <button
                 type="button"
                 className="btn-secondary"
-                disabled={loading || !phone.trim()}
+                disabled={loading || !toE164Phone(phone)}
                 onClick={() => void sendOtp()}
               >
                 Send OTP
@@ -168,6 +167,7 @@ export default function LoginClient() {
                 onClick={() => {
                   setOtpSent(false);
                   setOtp("");
+                  setPhone({ countryIso2: "in", nationalNumber: "" });
                 }}
               >
                 Use a different number

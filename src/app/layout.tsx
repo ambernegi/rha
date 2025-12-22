@@ -45,34 +45,30 @@ export default async function RootLayout({
               </Link>
               <nav className="nav-links" />
               <div className="nav-auth">
-                <details className="nav-dropdown">
-                  <summary className="nav-auth-link">
-                    {user ? displayName : "Sign in"}
-                  </summary>
-                  <div className="nav-dropdown-menu">
-                    {user ? (
-                      <>
-                        {isHost && (
-                          <Link href="/admin" className="nav-dropdown-item">
-                            Owner dashboard
-                          </Link>
-                        )}
-                        <Link href="/dashboard" className="nav-dropdown-item">
-                          My bookings
+                {user ? (
+                  <details className="nav-dropdown">
+                    <summary className="nav-auth-link">{displayName}</summary>
+                    <div className="nav-dropdown-menu">
+                      {isHost && (
+                        <Link href="/admin" className="nav-dropdown-item">
+                          Owner dashboard
                         </Link>
-                        <form method="post" action="/logout" style={{ margin: 0 }}>
-                          <button type="submit" className="nav-dropdown-item nav-dropdown-button">
-                            Sign out
-                          </button>
-                        </form>
-                      </>
-                    ) : (
-                      <Link href="/login" className="nav-dropdown-item">
-                        Sign in with Google
+                      )}
+                      <Link href="/dashboard" className="nav-dropdown-item">
+                        My bookings
                       </Link>
-                    )}
-                  </div>
-                </details>
+                      <form method="post" action="/logout" style={{ margin: 0 }}>
+                        <button type="submit" className="nav-dropdown-item nav-dropdown-button">
+                          Sign out
+                        </button>
+                      </form>
+                    </div>
+                  </details>
+                ) : (
+                  <Link href="/login" className="nav-auth-link nav-auth-link--chevron">
+                    Sign in
+                  </Link>
+                )}
               </div>
             </div>
           </header>
