@@ -286,12 +286,11 @@ This is not “Gmail”, but it satisfies “free email notifications” more re
 
 ---
 
-## Mobile Auth via OTP (Phone)
+## Authentication Providers
 
-The app supports **Supabase phone OTP** sign-in in addition to Google.
-
-Important note about “free”:
-- The OTP feature is free to implement, but **SMS delivery is typically not truly free**. Supabase phone auth requires an SMS provider configuration and messages may incur costs depending on your plan/provider.
+The app supports OAuth sign-in via:
+- Google
+- Facebook
 
 
 ### When to send emails
