@@ -20,6 +20,10 @@ export default function PropertyPage({ params }: any) {
   const selectedConfigurationSlug =
     bookingSlugByPropertySlug[property.slug] ?? "entire_villa";
 
+  const bookHref = `/book?configurationSlug=${encodeURIComponent(
+    selectedConfigurationSlug,
+  )}`;
+
   return (
     <div className="stack-lg">
       <div className="card">
@@ -105,11 +109,21 @@ export default function PropertyPage({ params }: any) {
         </div>
         <div className="hero-actions">
           <Link
-            href={`/book?configurationSlug=${encodeURIComponent(
-              selectedConfigurationSlug,
-            )}`}
+            href={bookHref}
             className="btn-primary"
           >
+            Book Now
+          </Link>
+        </div>
+      </div>
+
+      <div className="property-sticky-cta">
+        <div className="property-sticky-cta-inner">
+          <div>
+            <div className="booking-sticky-title">{property.name}</div>
+            <div className="booking-sticky-subtitle">{property.priceLabel}</div>
+          </div>
+          <Link href={bookHref} className="btn-primary">
             Book Now
           </Link>
         </div>

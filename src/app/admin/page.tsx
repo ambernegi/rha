@@ -265,24 +265,24 @@ export default function AdminPage() {
                     <div style={{ display: "flex", gap: "0.35rem" }}>
                       {b.source !== "manual" && (
                         <>
-                          <button
-                            type="button"
-                            className="btn-secondary"
-                            style={{ padding: "0.3rem 0.7rem", fontSize: "0.8rem" }}
-                            disabled={updatingId === b.id}
+                      <button
+                        type="button"
+                        className="btn-secondary"
+                        style={{ padding: "0.3rem 0.7rem", fontSize: "0.8rem" }}
+                        disabled={updatingId === b.id}
                             onClick={() => updateBooking(b.id, "confirm")}
-                          >
-                            Confirm
-                          </button>
-                          <button
-                            type="button"
-                            className="btn-secondary"
-                            style={{ padding: "0.3rem 0.7rem", fontSize: "0.8rem" }}
-                            disabled={updatingId === b.id}
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-secondary"
+                        style={{ padding: "0.3rem 0.7rem", fontSize: "0.8rem" }}
+                        disabled={updatingId === b.id}
                             onClick={() => updateBooking(b.id, "reject")}
-                          >
+                      >
                             Reject
-                          </button>
+                      </button>
                         </>
                       )}
                       <button

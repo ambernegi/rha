@@ -197,6 +197,80 @@ button {
   }
 }
 
+/* Sticky booking CTA (mobile) */
+.booking-sticky-cta {
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
+  background: rgba(2, 6, 23, 0.88);
+  border-top: 1px solid var(--border);
+  padding: 0.75rem 0.75rem calc(0.75rem + env(safe-area-inset-bottom));
+  backdrop-filter: blur(14px);
+}
+
+.booking-sticky-cta-inner {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.booking-sticky-summary {
+  min-width: 0;
+}
+
+.booking-sticky-title {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.booking-sticky-subtitle {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.booking-sticky-button {
+  padding: 0.65rem 1rem;
+  border-radius: 0.9rem;
+}
+
+@media (min-width: 980px) {
+  .booking-sticky-cta {
+    display: none;
+  }
+}
+
+/* Sticky property CTA (mobile) */
+.property-sticky-cta {
+  position: sticky;
+  bottom: 0;
+  z-index: 25;
+  background: rgba(2, 6, 23, 0.88);
+  border-top: 1px solid var(--border);
+  padding: 0.75rem 0.75rem calc(0.75rem + env(safe-area-inset-bottom));
+  backdrop-filter: blur(14px);
+}
+
+.property-sticky-cta-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+@media (min-width: 980px) {
+  .property-sticky-cta {
+    display: none;
+  }
+}
+
 .app-main {
   flex: 1;
   max-width: 1500px;
@@ -312,21 +386,6 @@ button {
   border-radius: 1rem;
   border: 1px solid var(--border);
   padding: 1.5rem;
-}
-
-.card-link {
-  display: block;
-  cursor: pointer;
-  transition: border-color 140ms ease, transform 140ms ease;
-}
-
-.card-link:hover {
-  border-color: rgba(79, 70, 229, 0.75);
-  transform: translateY(-1px);
-}
-
-.card-link:active {
-  transform: translateY(0);
 }
 
 .card-header {
@@ -499,6 +558,45 @@ button {
 .calendar-nav {
   padding: 0.45rem 0.9rem;
   border-radius: 0.8rem;
+}
+
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.9rem;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.calendar-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.calendar-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  display: inline-block;
+}
+
+.calendar-legend-swatch--booked {
+  border-color: rgba(239, 68, 68, 0.8);
+  background: rgba(239, 68, 68, 0.18);
+}
+
+.calendar-legend-swatch--selected {
+  border-color: rgba(79, 70, 229, 0.95);
+  background: rgba(79, 70, 229, 0.22);
+}
+
+.calendar-legend-swatch--today {
+  border-color: rgba(79, 70, 229, 0.95);
+  background: transparent;
 }
 
 .calendar-weekdays {

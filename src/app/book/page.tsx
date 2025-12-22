@@ -146,25 +146,25 @@ export default function BookPage() {
         onClose={() => setShowLogin(false)}
       />
       <div className="booking-grid">
-        <div className="card">
-          <div className="card-header">
-            <div>
+      <div className="card">
+        <div className="card-header">
+          <div>
               <div className="card-title">Request a booking</div>
-              <div className="card-subtitle">
+            <div className="card-subtitle">
                 Select a stay option, then pick dates from the calendar.
               </div>
             </div>
-            <span className="badge badge-success">Live</span>
-          </div>
+          <span className="badge badge-success">Live</span>
+        </div>
 
           {loadingConfigs ? (
             <p className="muted">Loading stay options…</p>
           ) : configs.length === 0 ? (
-            <p className="muted">
+          <p className="muted">
               No configurations configured yet. Seed Supabase configurations to enable booking.
-            </p>
-          ) : (
-            <form onSubmit={handleSubmit} className="stack">
+          </p>
+        ) : (
+          <form onSubmit={handleSubmit} className="stack">
               <div className="field">
                 <label>Stay option</label>
                 <select
@@ -198,28 +198,28 @@ export default function BookPage() {
                   ) : (
                     "Choose your check-in and check-out dates from the calendar."
                   )}
-                </div>
               </div>
+            </div>
 
-              <button
-                type="submit"
-                className="btn-primary"
+            <button
+              type="submit"
+              className="btn-primary"
                 disabled={submitting || !selectedSlug || !startDate || !endDate}
-              >
+            >
                 {submitting ? "Submitting…" : "Request booking"}
-              </button>
+            </button>
 
-              {message && <p className="muted">{message}</p>}
-              {error && <p className="muted" style={{ color: "var(--error)" }}>{error}</p>}
-            </form>
-          )}
-        </div>
+            {message && <p className="muted">{message}</p>}
+            {error && <p className="muted" style={{ color: "var(--error)" }}>{error}</p>}
+          </form>
+        )}
+      </div>
 
-        <div className="card">
-          <div className="card-header">
-            <div>
+      <div className="card">
+        <div className="card-header">
+          <div>
               <div className="card-title">Select dates</div>
-              <div className="card-subtitle">
+            <div className="card-subtitle">
                 Booked days are crossed out (confirmed only).
               </div>
             </div>
@@ -235,6 +235,34 @@ export default function BookPage() {
               setEndDate(range.endDate);
             }}
           />
+        </div>
+      </div>
+
+      <div className="booking-sticky-cta">
+        <div className="booking-sticky-cta-inner">
+          <div className="booking-sticky-summary">
+            <div className="booking-sticky-title">
+              {selectedConfig?.label ?? "Select a stay option"}
+            </div>
+            <div className="booking-sticky-subtitle">
+              {startDate && endDate
+                ? `${startDate} → ${endDate} · ${nights} night${nights === 1 ? "" : "s"} · ₹${Number(total).toFixed(0)}`
+                : "Pick check-in & check-out"}
+            </div>
+          </div>
+          <button
+            type="button"
+            className="btn-primary booking-sticky-button"
+            disabled={submitting || !selectedSlug || !startDate || !endDate}
+            onClick={(e) => {
+              // Submit the existing form programmatically.
+              e.preventDefault();
+              const form = document.querySelector("form");
+              form?.requestSubmit();
+            }}
+          >
+            {submitting ? "Submitting…" : "Request booking"}
+          </button>
         </div>
       </div>
     </div>

@@ -212,6 +212,18 @@ export function BookingCalendar(props: Props) {
       {loading && <div className="muted">Loading availability…</div>}
       {localError && <div className="muted" style={{ color: "var(--error)" }}>{localError}</div>}
 
+      <div className="calendar-legend">
+        <span className="calendar-legend-item">
+          <span className="calendar-legend-swatch calendar-legend-swatch--booked" /> Booked
+        </span>
+        <span className="calendar-legend-item">
+          <span className="calendar-legend-swatch calendar-legend-swatch--selected" /> Selected
+        </span>
+        <span className="calendar-legend-item">
+          <span className="calendar-legend-swatch calendar-legend-swatch--today" /> Today
+        </span>
+      </div>
+
       <div className="calendar-weekdays">
         {WEEKDAYS.map((d) => (
           <div key={d} className="calendar-weekday">
